@@ -1,2 +1,2 @@
-# web_blackjack
-Blackjack web-app game for the MSc Software Engineering course at Miskolci Egyetem.
+# Web Blackjack
+Blackjack web-app game for the MSc Software Development course at the University of Miskolc.
