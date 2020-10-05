@@ -1,6 +1,6 @@
 package hu.miskolc.uni.web_blackjack.service.Impl;
 
-import hu.miskolc.uni.web_blackjack.controller.dto.GameStateDTO;
+import hu.miskolc.uni.web_blackjack.model.GameState;
 import hu.miskolc.uni.web_blackjack.service.BlackjackService;
 
 /**
@@ -14,7 +14,7 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public GameStateDTO start() {
+    public GameState start() {
         return null;
     }
 
@@ -22,7 +22,7 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public GameStateDTO hit(GameStateDTO dto) {
+    public GameState start(GameState gameState) {
         return null;
     }
 
@@ -30,7 +30,7 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public GameStateDTO stand(GameStateDTO dto) {
+    public GameState hit(GameState gameState) {
         return null;
     }
 
@@ -38,7 +38,15 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public GameStateDTO surrender(GameStateDTO dto) {
+    public GameState stand(GameState gameState) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GameState surrender(GameState gameState) {
         return null;
     }
 }

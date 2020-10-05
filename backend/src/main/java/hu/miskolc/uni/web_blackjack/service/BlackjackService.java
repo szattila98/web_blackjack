@@ -1,6 +1,6 @@
 package hu.miskolc.uni.web_blackjack.service;
 
-import hu.miskolc.uni.web_blackjack.controller.dto.GameStateDTO;
+import hu.miskolc.uni.web_blackjack.model.GameState;
 
 /**
  * Interface of the Blackjack Service
@@ -11,34 +11,41 @@ import hu.miskolc.uni.web_blackjack.controller.dto.GameStateDTO;
 public interface BlackjackService {
 
     /**
-     * Starts a game of blackjack. Sends a dto which stores the game state.
+     * Starts a new game of blackjack. Sends an object which stores the game state.
      *
-     * @return GameStateDTO - stores the game state
+     * @return GameState - stores the game state
      */
-    GameStateDTO start();
+    GameState start();
+
+    /**
+     * Joins an ongoing game of blackjack. Sends an object which stores the game state.
+     *
+     * @return GameState - stores the game state
+     */
+    GameState start(GameState gameState);
 
     /**
      * Gives the current player another card.
      *
-     * @param dto - stores the game state
-     * @return GameStateDTO - stores the game state
+     * @param gameState - stores the game state
+     * @return GameState - stores the game state
      */
-    GameStateDTO hit(GameStateDTO dto);
+    GameState hit(GameState gameState);
 
     /**
      * Ends the current player's turn.
      *
-     * @param dto - stores the game state
-     * @return GameStateDTO - stores the game state
+     * @param gameState - stores the game state
+     * @return GameState - stores the game state
      */
-    GameStateDTO stand(GameStateDTO dto);
+    GameState stand(GameState gameState);
 
     /**
-     * Surrenders the round of the current player.
+     * Surrenders the round of the current player with them only losing half of their wager.
      *
-     * @param dto - stores the game state
-     * @return GameStateDTO - stores the game state
+     * @param gameState - stores the game state
+     * @return GameState - stores the game state
      */
-    GameStateDTO surrender(GameStateDTO dto);
+    GameState surrender(GameState gameState);
 
 }
