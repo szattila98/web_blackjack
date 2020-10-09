@@ -1,14 +1,17 @@
 package hu.miskolc.uni.web_blackjack.model;
 
+import hu.miskolc.uni.web_blackjack.model.enums.GameStateType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
 /**
- * Data model for the GameState object.
+ * Data model for the Game object.
  *
  * @author Attila Szőke
  */
@@ -16,11 +19,12 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-public class GameState {
+@Document
+public class Game {
 
-    private Long id;
-    private String creatorName;
+    @Id
+    private String id;
     private List<Player> players;
     private List<Card> dealtCards;
-    private Player currentPlayer;
+    private GameStateType state;
 }

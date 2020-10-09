@@ -1,6 +1,6 @@
 package hu.miskolc.uni.web_blackjack.service;
 
-import hu.miskolc.uni.web_blackjack.model.GameState;
+import hu.miskolc.uni.web_blackjack.model.Game;
 
 /**
  * Interface of the Blackjack Service
@@ -15,37 +15,37 @@ public interface BlackjackService {
      *
      * @return GameState - stores the game state
      */
-    GameState start();
+    Game start();
 
     /**
      * Joins an ongoing game of blackjack. Sends an object which stores the game state.
      *
-     * @return GameState - stores the game state
+     * @return id - id of the game
      */
-    GameState start(GameState gameState);
+    Game start(Long id);
 
     /**
      * Gives the current player another card.
      *
-     * @param gameState - stores the game state
+     * @param game - stores the game state
      * @return GameState - stores the game state
      */
-    GameState hit(GameState gameState);
+    Game hit(Game game);
 
     /**
      * Ends the current player's turn.
      *
-     * @param gameState - stores the game state
+     * @param game - stores the game state
      * @return GameState - stores the game state
      */
-    GameState stand(GameState gameState);
+    Game stand(Game game);
 
     /**
      * Surrenders the round of the current player with them only losing half of their wager.
      *
-     * @param gameState - stores the game state
+     * @param game - stores the game state
      * @return GameState - stores the game state
      */
-    GameState surrender(GameState gameState);
+    Game surrender(Game game);
 
 }

@@ -5,6 +5,6 @@ package hu.miskolc.uni.web_blackjack.model.enums;
  *
  * @author Attila Szőke
  */
-public enum FaceCardType {
-    ACE, JACK, QUEEN, KING
+public enum RankType {
+    NUMBER, JACK, QUEEN, KING
 }
