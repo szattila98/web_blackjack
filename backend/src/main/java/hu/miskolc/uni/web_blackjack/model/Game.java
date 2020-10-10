@@ -19,7 +19,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-@Document
+@Document(collection = "games")
 public class Game {
 
     @Id

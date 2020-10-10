@@ -3,6 +3,10 @@ package hu.miskolc.uni.web_blackjack.controller;
 import hu.miskolc.uni.web_blackjack.model.Card;
 import hu.miskolc.uni.web_blackjack.model.Game;
 import hu.miskolc.uni.web_blackjack.model.User;
+import hu.miskolc.uni.web_blackjack.service.BlackjackService;
+import hu.miskolc.uni.web_blackjack.service.exceptions.GameNotFoundException;
+import hu.miskolc.uni.web_blackjack.service.exceptions.UserNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,15 +21,22 @@ import java.util.List;
 @RequestMapping("/api")
 public class BlackjackController {
 
+    private BlackjackService blackjackService;
+
+    @Autowired
+    public BlackjackController(BlackjackService blackjackService) {
+        this.blackjackService = blackjackService;
+    }
+
     /**
-     * Adds a new user object to the database.
+     * Records a new user.
      *
      * @param name - name of the new user
      * @return Created user object
      */
     @PostMapping("/user")
     public ResponseEntity<User> addUser(@RequestParam String name) {
-        return null;
+        return ResponseEntity.ok(blackjackService.createUser(name));
     }
 
     /**
@@ -35,8 +46,8 @@ public class BlackjackController {
      * @return list of games
      */
     @GetMapping("/game")
-    public ResponseEntity<List<Game>> listGames(@RequestParam Long userId) {
-        return null;
+    public ResponseEntity<List<Game>> listGames(@RequestParam String userId) {
+        return ResponseEntity.ok(blackjackService.getGames(userId));
     }
 
     /**
@@ -46,19 +57,19 @@ public class BlackjackController {
      * @return game details
      */
     @GetMapping("/game/{gameId}")
-    public ResponseEntity<Game> gameDetails(@PathVariable Long gameId) {
-        return null;
+    public ResponseEntity<Game> gameDetails(@PathVariable String gameId) throws GameNotFoundException {
+        return ResponseEntity.ok(blackjackService.getGame(gameId));
     }
 
     /**
-     * Adds a game object to the database.
+     * Records a new game object.
      *
      * @param userId - creator id
      * @return new game details
      */
     @PostMapping("/game")
-    public ResponseEntity<Game> addGame(@RequestParam Long userId) {
-        return null;
+    public ResponseEntity<Game> addGame(@RequestParam String userId) throws UserNotFoundException {
+        return ResponseEntity.ok(blackjackService.createGame(userId));
     }
 
     /**
@@ -69,7 +80,7 @@ public class BlackjackController {
      * @return game details
      */
     @PostMapping("/game/{gameId}/user/{userId}/join")
-    public ResponseEntity<Game> joinGame(@PathVariable Long gameId, @PathVariable Long userId) {
+    public ResponseEntity<Game> joinGame(@PathVariable String gameId, @PathVariable String userId) {
         return null;
     }
 
@@ -81,9 +92,9 @@ public class BlackjackController {
      * @return game details
      */
     @PostMapping("/api/game/{gameId}/user/{userId}/hit")
-    public ResponseEntity<Card> hit(@PathVariable Long gameId, @PathVariable Long userId) {
+    public ResponseEntity<Card> hit(@PathVariable String gameId, @PathVariable String userId) {
         return null;
-        //Bad request ha nem az adott játékos következik
+        // TODO Bad request ha nem az adott játékos következik
     }
 
     /**
@@ -93,8 +104,8 @@ public class BlackjackController {
      * @param userId - id of the user
      */
     @PostMapping("/api/game/{gameId}/user/{userId}/stand")
-    public ResponseEntity<Void> stand(@PathVariable Long gameId, @PathVariable Long userId) {
+    public ResponseEntity<Void> stand(@PathVariable String gameId, @PathVariable String userId) {
         return null;
-        //Bad request ha nem az adott játékos következik
+        // TODO Bad request ha nem az adott játékos következik
     }
 }

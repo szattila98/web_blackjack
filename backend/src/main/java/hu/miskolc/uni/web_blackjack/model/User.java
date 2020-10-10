@@ -17,10 +17,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @NoArgsConstructor
 @ToString
-@Document
+@Document(collection = "users")
 public class User {
 
     @Id
     private String id;
     private String name;
+
+    public User(String name) {
+        this.name = name;
+    }
 }
