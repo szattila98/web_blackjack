@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class BlackjackController {
 
-    private BlackjackService blackjackService;
+    private final BlackjackService blackjackService;
 
     @Autowired
     public BlackjackController(BlackjackService blackjackService) {

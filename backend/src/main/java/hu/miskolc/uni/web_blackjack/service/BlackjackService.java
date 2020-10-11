@@ -40,7 +40,7 @@ public interface BlackjackService {
     Game getGame(String gameId) throws GameNotFoundException;
 
     /**
-     * Creates a new game.
+     * Starts a new game of blackjack. Sends an object which stores the game state.
      *
      * @param userId - the creators user ID
      * @return user object
@@ -48,18 +48,11 @@ public interface BlackjackService {
     Game createGame(String userId) throws UserNotFoundException;
 
     /**
-     * Starts a new game of blackjack. Sends an object which stores the game state.
-     *
-     * @return GameState - stores the game state
-     */
-    Game start();
-
-    /**
      * Joins an ongoing game of blackjack. Sends an object which stores the game state.
      *
      * @return id - id of the game
      */
-    Game start(Long id);
+    Game joinGame(Long id);
 
     /**
      * Gives the current player another card.

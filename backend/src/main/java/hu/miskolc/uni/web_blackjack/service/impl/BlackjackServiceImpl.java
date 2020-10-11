@@ -4,31 +4,33 @@ import hu.miskolc.uni.web_blackjack.model.Card;
 import hu.miskolc.uni.web_blackjack.model.Game;
 import hu.miskolc.uni.web_blackjack.model.Player;
 import hu.miskolc.uni.web_blackjack.model.User;
+import hu.miskolc.uni.web_blackjack.model.enums.ColorType;
 import hu.miskolc.uni.web_blackjack.model.enums.GameStateType;
 import hu.miskolc.uni.web_blackjack.model.enums.PlayerStateType;
+import hu.miskolc.uni.web_blackjack.model.enums.RankType;
 import hu.miskolc.uni.web_blackjack.repository.GameRepository;
 import hu.miskolc.uni.web_blackjack.repository.UserRepository;
 import hu.miskolc.uni.web_blackjack.service.BlackjackService;
 import hu.miskolc.uni.web_blackjack.service.exceptions.GameNotFoundException;
 import hu.miskolc.uni.web_blackjack.service.exceptions.UserNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Default implementation of Blackjack Service interface.
  *
  * @author Attila Szőke
  */
+@Slf4j
 @Service
 public class BlackjackServiceImpl implements BlackjackService {
 
-    // TODO logging
-
-    private UserRepository userRepository;
-    private GameRepository gameRepository;
+    private final UserRepository userRepository;
+    private final GameRepository gameRepository;
 
     @Autowired
     public BlackjackServiceImpl(UserRepository userRepository, GameRepository gameRepository) {
@@ -41,7 +43,9 @@ public class BlackjackServiceImpl implements BlackjackService {
      */
     @Override
     public User createUser(String name) {
-        return userRepository.insert(new User(name));
+        User user = new User(name);
+        log.debug("Inserting new user {} into the database!", user);
+        return userRepository.insert(user);
     }
 
     /**
@@ -49,7 +53,9 @@ public class BlackjackServiceImpl implements BlackjackService {
      */
     @Override
     public List<Game> getGames(String userId) {
-        return gameRepository.findAllByPlayersUserIdNot(userId);
+        List<Game> games = gameRepository.findAllByPlayersUserIdNot(userId);
+        log.debug("Fetched games {}!", games);
+        return games;
     }
 
     /**
@@ -57,7 +63,9 @@ public class BlackjackServiceImpl implements BlackjackService {
      */
     @Override
     public Game getGame(String gameId) throws GameNotFoundException {
-        return gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
+        Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
+        log.debug("Fetched game {}!", game);
+        return game;
     }
 
     /**
@@ -66,31 +74,26 @@ public class BlackjackServiceImpl implements BlackjackService {
     @Override
     public Game createGame(String userId) throws UserNotFoundException {
         User creator = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        List<Card> cards = new ArrayList<>();
-        // TODO give cards to begin the game with, when the card dealer logic is done
-        Game game = new Game();
-        List<Player> initialPlayers = new ArrayList<>();
-        initialPlayers.add(new Player(creator, cards, 0, PlayerStateType.IN_GAME));
-        game.setPlayers(initialPlayers);
-        game.setDealtCards(new ArrayList<>());
-        // TODO add the cards here too so they won't be dealt again
-        game.setState(GameStateType.PENDING);
-        return gameRepository.insert(game);
+        Set<Card> creatorCards = new HashSet<>();
+
+        Game newGame = new Game();
+        newGame.setDealtCards(new HashSet<>());
+        newGame.setPlayers(new HashSet<>());
+        newGame.setState(GameStateType.PENDING);
+
+        creatorCards.add(dealCard(newGame.getDealtCards()));
+        creatorCards.add(dealCard(newGame.getDealtCards()));
+
+        newGame.getPlayers().add(new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME));
+        log.debug("Inserting new game {} into the database!", newGame);
+        return gameRepository.insert(newGame);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Game start() {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Game start(Long id) {
+    public Game joinGame(Long id) {
         return null;
     }
 
@@ -108,5 +111,42 @@ public class BlackjackServiceImpl implements BlackjackService {
     @Override
     public Game stand(Game game) {
         return null;
+    }
+
+    /**
+     * Deals a random card, except cards contained the parameter set.
+     * Also if the card is new adds it to the parameter list.
+     *
+     * @param dealtCards - the set of cards which should not be dealt
+     * @return random card
+     */
+    private Card dealCard(Set<Card> dealtCards) {
+        Card card = new Card();
+        do {
+            List<RankType> ranks = new ArrayList<>(EnumSet.allOf(RankType.class));
+            List<ColorType> colors = new ArrayList<>(EnumSet.allOf(ColorType.class));
+            card.setRank(ranks.get(rand(0, 3)));
+            if (card.getRank() == RankType.NUMBER) {
+                card.setNumber(rand(1, 10));
+            } else {
+                card.setNumber(10);
+            }
+            card.setColor(colors.get(rand(0, 3)));
+            log.debug("Generated card {} with dealt cards {}!", card, dealtCards);
+        } while (dealtCards.contains(card));
+        dealtCards.add(card);
+        log.debug("Generated card {}, which was not in the dealt cards {}", card, dealtCards);
+        return card;
+    }
+
+    /**
+     * Generates a random integer.
+     *
+     * @param min lower inclusive threshold
+     * @param max higher inclusive threshold
+     * @return random integer
+     */
+    private int rand(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 }

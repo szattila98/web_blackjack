@@ -3,7 +3,7 @@ package hu.miskolc.uni.web_blackjack.model;
 import hu.miskolc.uni.web_blackjack.model.enums.PlayerStateType;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Data model for the Player object.
@@ -18,7 +18,7 @@ import java.util.List;
 public class Player {
 
     private User user;
-    private List<Card> cards;
+    private Set<Card> cards;
     private int points;
     private PlayerStateType state;
 }
