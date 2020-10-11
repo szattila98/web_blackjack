@@ -3,8 +3,8 @@ package hu.miskolc.uni.web_blackjack.model.enums;
 /**
  * Symbolizes the face-card property of the cards in the standard 52-card French deck.
  *
- * @author Attila Szőke
+ * @author Tamás Sólyom
  */
 public enum RankType {
-    NUMBER, JACK, QUEEN, KING
+    TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE
 }

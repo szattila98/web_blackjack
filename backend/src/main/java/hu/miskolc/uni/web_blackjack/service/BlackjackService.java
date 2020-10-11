@@ -1,5 +1,6 @@
 package hu.miskolc.uni.web_blackjack.service;
 
+import hu.miskolc.uni.web_blackjack.model.Card;
 import hu.miskolc.uni.web_blackjack.model.Game;
 import hu.miskolc.uni.web_blackjack.model.User;
 import hu.miskolc.uni.web_blackjack.service.exceptions.GameNotFoundException;
