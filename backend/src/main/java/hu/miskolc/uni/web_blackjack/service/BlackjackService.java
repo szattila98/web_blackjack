@@ -1,11 +1,9 @@
 package hu.miskolc.uni.web_blackjack.service;
 
-import hu.miskolc.uni.web_blackjack.model.Card;
 import hu.miskolc.uni.web_blackjack.model.Game;
 import hu.miskolc.uni.web_blackjack.model.Player;
 import hu.miskolc.uni.web_blackjack.model.User;
-import hu.miskolc.uni.web_blackjack.service.exceptions.GameNotFoundException;
-import hu.miskolc.uni.web_blackjack.service.exceptions.UserNotFoundException;
+import hu.miskolc.uni.web_blackjack.service.exceptions.*;
 
 import java.util.List;
 
@@ -54,7 +52,7 @@ public interface BlackjackService {
      *
      * @return id - id of the game
      */
-    Game joinGame(Long id);
+    Game joinGame(String gameId, String userId) throws GameNotFoundException, UserNotFoundException, GameFullException, PlayerAlreadyInGameException, GameAlreadyClosedException;
 
     /**
      * Gives the current player another card.

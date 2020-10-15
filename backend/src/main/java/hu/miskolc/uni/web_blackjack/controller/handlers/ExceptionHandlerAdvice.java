@@ -1,7 +1,6 @@
 package hu.miskolc.uni.web_blackjack.controller.handlers;
 
-import hu.miskolc.uni.web_blackjack.service.exceptions.GameNotFoundException;
-import hu.miskolc.uni.web_blackjack.service.exceptions.UserNotFoundException;
+import hu.miskolc.uni.web_blackjack.service.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,7 @@ public class ExceptionHandlerAdvice {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body("Game with this ID could not be found!");
+                .body(e.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
@@ -25,6 +24,30 @@ public class ExceptionHandlerAdvice {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body("User with this ID could not be found!");
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(GameFullException.class)
+    public ResponseEntity<?> handleException(GameFullException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(PlayerAlreadyInGameException.class)
+    public ResponseEntity<?> handleException(PlayerAlreadyInGameException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(GameAlreadyClosedException.class)
+    public ResponseEntity<?> handleException(GameAlreadyClosedException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
     }
 }

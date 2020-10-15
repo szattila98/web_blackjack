@@ -4,8 +4,7 @@ import hu.miskolc.uni.web_blackjack.model.Card;
 import hu.miskolc.uni.web_blackjack.model.Game;
 import hu.miskolc.uni.web_blackjack.model.User;
 import hu.miskolc.uni.web_blackjack.service.BlackjackService;
-import hu.miskolc.uni.web_blackjack.service.exceptions.GameNotFoundException;
-import hu.miskolc.uni.web_blackjack.service.exceptions.UserNotFoundException;
+import hu.miskolc.uni.web_blackjack.service.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -80,8 +79,8 @@ public class BlackjackController {
      * @return game details
      */
     @PostMapping("/game/{gameId}/user/{userId}/join")
-    public ResponseEntity<Game> joinGame(@PathVariable String gameId, @PathVariable String userId) {
-        return null;
+    public ResponseEntity<Game> joinGame(@PathVariable String gameId, @PathVariable String userId) throws UserNotFoundException, GameAlreadyClosedException, GameFullException, PlayerAlreadyInGameException, GameNotFoundException {
+        return ResponseEntity.ok(blackjackService.joinGame(gameId, userId));
     }
 
     /**

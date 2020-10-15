@@ -7,7 +7,7 @@ package hu.miskolc.uni.web_blackjack.service.exceptions;
  */
 public class UserNotFoundException extends Exception {
 
-    private static final String ERROR_MESSAGE = "User can not be found!";
+    private static final String ERROR_MESSAGE = "User with this ID could not be found!";
 
     public UserNotFoundException() {
         super(ERROR_MESSAGE);

@@ -11,8 +11,7 @@ import hu.miskolc.uni.web_blackjack.model.enums.RankType;
 import hu.miskolc.uni.web_blackjack.repository.GameRepository;
 import hu.miskolc.uni.web_blackjack.repository.UserRepository;
 import hu.miskolc.uni.web_blackjack.service.BlackjackService;
-import hu.miskolc.uni.web_blackjack.service.exceptions.GameNotFoundException;
-import hu.miskolc.uni.web_blackjack.service.exceptions.UserNotFoundException;
+import hu.miskolc.uni.web_blackjack.service.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Default implementation of Blackjack Service interface.
  *
  * @author Attila Szőke
+ * @author Tamás Sólyom
  */
 @Slf4j
 @Service
@@ -71,10 +71,6 @@ public class BlackjackServiceImpl implements BlackjackService {
     /**
      * {@inheritDoc}
      */
-    /**
-     *
-
-     */
     @Override
     public Game createGame(String userId) throws UserNotFoundException {
         User creator = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
@@ -97,8 +93,26 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public Game joinGame(Long id) {
-        return null;
+    public Game joinGame(String gameId, String userId) throws GameNotFoundException, UserNotFoundException, GameFullException, PlayerAlreadyInGameException, GameAlreadyClosedException {
+        Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
+        if (game.getState() == GameStateType.CLOSED) {
+            throw new GameAlreadyClosedException();
+        }
+        if (game.getPlayers().size() > 1) {
+            throw new GameFullException();
+        }
+        for (Player player : game.getPlayers()) {
+            if (player.getUser().getId().equals(userId)) {
+                throw new PlayerAlreadyInGameException();
+            }
+        }
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Set<Card> userCards = new HashSet<>();
+        userCards.add(dealCard(game.getDealtCards()));
+        userCards.add(dealCard(game.getDealtCards()));
+        game.getPlayers().add(new Player(user, userCards, 0, PlayerStateType.IN_GAME));
+        game.setState(GameStateType.IN_PROGRESS);
+        return gameRepository.save(game);
     }
 
     /**

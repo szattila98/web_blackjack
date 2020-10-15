@@ -7,7 +7,7 @@ package hu.miskolc.uni.web_blackjack.service.exceptions;
  */
 public class GameNotFoundException extends Exception {
 
-    private static final String ERROR_MESSAGE = "Game can not be found!";
+    private static final String ERROR_MESSAGE = "Game with this ID could not be found!";
 
     public GameNotFoundException() {
         super(ERROR_MESSAGE);
