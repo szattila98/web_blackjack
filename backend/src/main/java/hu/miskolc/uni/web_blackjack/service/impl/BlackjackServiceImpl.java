@@ -105,16 +105,34 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public Game hit(Game game) {
-        return null;
+    public Game hit(Game game, Player player) {
+        Set<Card> currentCards = game.getDealtCards();
+        Set<Player> currentPlayers = game.getPlayers();
+
+        Card newCard = dealCard(currentCards);
+        currentCards.add(newCard);
+        game.setDealtCards(currentCards);
+
+        currentPlayers.forEach((p) -> {
+            if(p.getUser().getId().equals(player.getUser().getId())) p.getCards().add(newCard);
+        });
+        game.setPlayers(currentPlayers);
+        return game;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Game stand(Game game) {
-        return null;
+    public Game stand(Game game, Player player) {
+        Set<Player> currentPlayers = game.getPlayers();
+        currentPlayers.forEach((p) -> {
+            if(p.getUser().getId().equals(player.getUser().getId())) {
+                p.setState(PlayerStateType.STOPPED);
+            }
+        });
+        game.setPlayers(currentPlayers);
+        return game;
     }
 
     /**
@@ -149,4 +167,5 @@ public class BlackjackServiceImpl implements BlackjackService {
     private int rand(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
+
 }

@@ -2,6 +2,7 @@ package hu.miskolc.uni.web_blackjack.service;
 
 import hu.miskolc.uni.web_blackjack.model.Card;
 import hu.miskolc.uni.web_blackjack.model.Game;
+import hu.miskolc.uni.web_blackjack.model.Player;
 import hu.miskolc.uni.web_blackjack.model.User;
 import hu.miskolc.uni.web_blackjack.service.exceptions.GameNotFoundException;
 import hu.miskolc.uni.web_blackjack.service.exceptions.UserNotFoundException;
@@ -61,7 +62,7 @@ public interface BlackjackService {
      * @param game - stores the game state
      * @return GameState - stores the game state
      */
-    Game hit(Game game);
+    Game hit(Game game, Player player);
 
     /**
      * Ends the current player's turn.
@@ -69,6 +70,6 @@ public interface BlackjackService {
      * @param game - stores the game state
      * @return GameState - stores the game state
      */
-    Game stand(Game game);
+    Game stand(Game game, Player player);
 
 }
