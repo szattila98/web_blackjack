@@ -130,36 +130,7 @@ public class BlackjackServiceImpl implements BlackjackService {
             List<RankType> ranks = new ArrayList<>(EnumSet.allOf(RankType.class));
             List<ColorType> colors = new ArrayList<>(EnumSet.allOf(ColorType.class));
             card.setRank(ranks.get(rand(0, 12)));
-            if (card.getRank() == RankType.TWO) {
-                card.setNumber(2);
-            }
-            else if (card.getRank() == RankType.THREE) {
-                card.setNumber(3);
-            }
-            else if (card.getRank() == RankType.FOUR) {
-                card.setNumber(4);
-            }
-            else if (card.getRank() == RankType.FIVE) {
-                card.setNumber(5);
-            }
-            else if (card.getRank() == RankType.SIX) {
-                card.setNumber(6);
-            }
-            else if (card.getRank() == RankType.SEVEN) {
-                card.setNumber(7);
-            }
-            else if (card.getRank() == RankType.EIGHT) {
-                card.setNumber(8);
-            }
-            else if (card.getRank() == RankType.NINE) {
-                card.setNumber(9);
-            }
-            else if (card.getRank() == RankType.TEN || card.getRank() == RankType.JACK || card.getRank() == RankType.QUEEN || card.getRank() == RankType.KING) {
-                card.setNumber(10);
-            }
-            else {
-                card.setNumber(11);
-            }
+            card.setNumber(card.getRank().getValue());
             card.setColor(colors.get(rand(0, 3)));
             log.debug("Generated card {} with dealt cards {}!", card, dealtCards);
         } while (dealtCards.contains(card));
