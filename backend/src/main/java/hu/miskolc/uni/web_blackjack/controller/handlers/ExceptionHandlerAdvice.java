@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Handles all exceptions with REST return values, thrown when a controller method encounters one.
+ *
+ * @author Attila Szőke
+ */
 @Slf4j
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {

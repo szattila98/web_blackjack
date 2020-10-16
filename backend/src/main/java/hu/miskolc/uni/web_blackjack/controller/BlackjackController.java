@@ -31,7 +31,7 @@ public class BlackjackController {
     /**
      * Records a new user.
      *
-     * @param userNameDTO - dto containing the name of the new user
+     * @param userNameDTO dto containing the name of the new user
      * @return Created user object
      */
     @PostMapping("/user")
@@ -42,7 +42,7 @@ public class BlackjackController {
     /**
      * List all games, except the one in which the current user is already a player.
      *
-     * @param userId - id of the current user
+     * @param userId id of the current user
      * @return list of games
      */
     @GetMapping("/game")
@@ -53,7 +53,7 @@ public class BlackjackController {
     /**
      * Fetches the details of a particular game.
      *
-     * @param gameId - id of the game
+     * @param gameId id of the game
      * @return game details
      */
     @GetMapping("/game/{gameId}")
@@ -64,7 +64,7 @@ public class BlackjackController {
     /**
      * Records a new game object.
      *
-     * @param creatorIdDTO - dto containing the creator id
+     * @param creatorIdDTO dto containing the creator id
      * @return new game details
      */
     @PostMapping("/game")
@@ -75,8 +75,8 @@ public class BlackjackController {
     /**
      * Joins a player into a game.
      *
-     * @param gameId - id of the game
-     * @param userId - id of the user
+     * @param gameId id of the game
+     * @param userId id of the user
      * @return game details
      */
     @PostMapping("/game/{gameId}/user/{userId}/join")
@@ -87,8 +87,8 @@ public class BlackjackController {
     /**
      * Gives a player another card.
      *
-     * @param gameId - id of the game
-     * @param userId - id of the user
+     * @param gameId id of the game
+     * @param userId id of the user
      * @return game details
      */
     @PostMapping("/api/game/{gameId}/user/{userId}/hit")
@@ -100,8 +100,8 @@ public class BlackjackController {
     /**
      * Stops a players turn.
      *
-     * @param gameId - id of the game
-     * @param userId - id of the user
+     * @param gameId id of the game
+     * @param userId id of the user
      */
     @PostMapping("/api/game/{gameId}/user/{userId}/stand")
     public ResponseEntity<Void> stand(@PathVariable String gameId, @PathVariable String userId) {

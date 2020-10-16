@@ -12,5 +12,11 @@ import java.util.List;
  */
 public interface GameRepository extends MongoRepository<Game, String> {
 
-    List<Game> findAllByPlayersUserIdNot(String id);
+    /**
+     * Finds all the games, where among the players a user's id is not present. Implementation is generated with Spring Data derived methods.
+     *
+     * @param userId the user's Id to filter with
+     * @return list of games
+     */
+    List<Game> findAllByPlayersUserIdNot(String userId);
 }
