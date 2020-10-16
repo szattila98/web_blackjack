@@ -1,5 +1,6 @@
 package hu.miskolc.uni.web_blackjack.controller;
 
+import hu.miskolc.uni.web_blackjack.controller.dtos.UserInput;
 import hu.miskolc.uni.web_blackjack.model.Card;
 import hu.miskolc.uni.web_blackjack.model.Game;
 import hu.miskolc.uni.web_blackjack.model.User;
@@ -30,12 +31,12 @@ public class BlackjackController {
     /**
      * Records a new user.
      *
-     * @param name - name of the new user
+     * @param userNameDTO - dto containing the name of the new user
      * @return Created user object
      */
     @PostMapping("/user")
-    public ResponseEntity<User> addUser(@RequestParam String name) {
-        return ResponseEntity.ok(blackjackService.createUser(name));
+    public ResponseEntity<User> addUser(@RequestBody UserInput userNameDTO) {
+        return ResponseEntity.ok(blackjackService.createUser(userNameDTO.getInputValue()));
     }
 
     /**
@@ -63,12 +64,12 @@ public class BlackjackController {
     /**
      * Records a new game object.
      *
-     * @param userId - creator id
+     * @param creatorIdDTO - dto containing the creator id
      * @return new game details
      */
     @PostMapping("/game")
-    public ResponseEntity<Game> addGame(@RequestParam String userId) throws UserNotFoundException {
-        return ResponseEntity.ok(blackjackService.createGame(userId));
+    public ResponseEntity<Game> addGame(@RequestBody UserInput creatorIdDTO) throws UserNotFoundException {
+        return ResponseEntity.ok(blackjackService.createGame(creatorIdDTO.getInputValue()));
     }
 
     /**

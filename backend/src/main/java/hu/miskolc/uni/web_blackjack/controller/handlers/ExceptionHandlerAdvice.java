@@ -4,50 +4,55 @@ import hu.miskolc.uni.web_blackjack.service.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Collections;
+import java.util.Map;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class ExceptionHandlerAdvice {
 
+    private static final String messageKey = "msg";
+
     @ExceptionHandler(GameNotFoundException.class)
-    public ResponseEntity<?> handleException(GameNotFoundException e) {
+    public ResponseEntity<Map<String, Object>> handleException(GameNotFoundException e) {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
+                .body(Collections.singletonMap(messageKey, e.getMessage()));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<?> handleException(UserNotFoundException e) {
+    public ResponseEntity<Map<String, Object>> handleException(UserNotFoundException e) {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
+                .body(Collections.singletonMap(messageKey, e.getMessage()));
     }
 
     @ExceptionHandler(GameFullException.class)
-    public ResponseEntity<?> handleException(GameFullException e) {
+    public ResponseEntity<Map<String, Object>> handleException(GameFullException e) {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(e.getMessage());
+                .body(Collections.singletonMap(messageKey, e.getMessage()));
     }
 
     @ExceptionHandler(PlayerAlreadyInGameException.class)
-    public ResponseEntity<?> handleException(PlayerAlreadyInGameException e) {
+    public ResponseEntity<Map<String, Object>> handleException(PlayerAlreadyInGameException e) {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(e.getMessage());
+                .body(Collections.singletonMap(messageKey, e.getMessage()));
     }
 
     @ExceptionHandler(GameAlreadyClosedException.class)
-    public ResponseEntity<?> handleException(GameAlreadyClosedException e) {
+    public ResponseEntity<Map<String, Object>> handleException(GameAlreadyClosedException e) {
         log.error(e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(e.getMessage());
+                .body(Collections.singletonMap(messageKey, e.getMessage()));
     }
 }
