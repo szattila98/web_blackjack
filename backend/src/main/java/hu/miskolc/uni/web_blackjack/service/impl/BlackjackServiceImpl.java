@@ -119,7 +119,8 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public Game hit(Game game, Player player) {
+    public Game hit(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException {
+        Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
         Set<Card> currentCards = game.getDealtCards();
         Set<Player> currentPlayers = game.getPlayers();
 
@@ -127,26 +128,41 @@ public class BlackjackServiceImpl implements BlackjackService {
         currentCards.add(newCard);
         game.setDealtCards(currentCards);
 
+        for(Player p : currentPlayers) {
+            if(p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
+                throw new PlayerAlreadyStoppedException();
+            }
+        }
         currentPlayers.forEach((p) -> {
-            if(p.getUser().getId().equals(player.getUser().getId())) p.getCards().add(newCard);
+            if(p.getUser().getId().equals(userId)) {
+                p.getCards().add(newCard);
+            }
         });
         game.setPlayers(currentPlayers);
-        return game;
+
+        return gameRepository.save(game);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Game stand(Game game, Player player) {
+    public Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException {
+        Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
         Set<Player> currentPlayers = game.getPlayers();
+
+        for(Player p : currentPlayers) {
+            if(p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
+                throw new PlayerAlreadyStoppedException();
+            }
+        }
         currentPlayers.forEach((p) -> {
-            if(p.getUser().getId().equals(player.getUser().getId())) {
+            if(p.getUser().getId().equals(userId)) {
                 p.setState(PlayerStateType.STOPPED);
             }
         });
         game.setPlayers(currentPlayers);
-        return game;
+        return gameRepository.save(game);
     }
 
     /**

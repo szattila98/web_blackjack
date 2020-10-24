@@ -53,6 +53,14 @@ public class ExceptionHandlerAdvice {
                 .body(Collections.singletonMap(messageKey, e.getMessage()));
     }
 
+    @ExceptionHandler(PlayerAlreadyStoppedException.class)
+    public ResponseEntity<Map<String, Object>> handleException(PlayerAlreadyStoppedException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap(messageKey, e.getMessage()));
+    }
+
     @ExceptionHandler(GameAlreadyClosedException.class)
     public ResponseEntity<Map<String, Object>> handleException(GameAlreadyClosedException e) {
         log.error(e.getMessage());

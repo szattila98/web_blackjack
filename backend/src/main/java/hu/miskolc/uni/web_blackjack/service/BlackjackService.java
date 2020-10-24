@@ -64,17 +64,21 @@ public interface BlackjackService {
     /**
      * Gives the current player another card.
      *
-     * @param game stores the game state
+     * @param gameId stores the game ID
+     * @param userId stores the user ID
      * @return game object
+     * @exception PlayerAlreadyStoppedException when the player is stopped in the game and can't get cards
      */
-    Game hit(Game game, Player player);
+    Game hit(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException;
 
     /**
      * Ends the current player's turn.
      *
-     * @param game stores the game state
+     * @param gameId stores the game ID
+     * @param userId stores the user ID
      * @return game object
+     * @exception PlayerAlreadyStoppedException when the player is already stopped in the game
      */
-    Game stand(Game game, Player player);
+    Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException;
 
 }

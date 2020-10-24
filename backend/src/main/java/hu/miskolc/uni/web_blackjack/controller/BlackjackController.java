@@ -92,8 +92,8 @@ public class BlackjackController {
      * @return game details
      */
     @PostMapping("/api/game/{gameId}/user/{userId}/hit")
-    public ResponseEntity<Card> hit(@PathVariable String gameId, @PathVariable String userId) {
-        return null;
+    public ResponseEntity<Game> hit(@PathVariable String gameId, @PathVariable String userId) throws PlayerAlreadyStoppedException, GameNotFoundException {
+        return ResponseEntity.ok(blackjackService.hit(gameId, userId));
         // TODO Bad request ha nem az adott játékos következik
     }
 
@@ -104,8 +104,8 @@ public class BlackjackController {
      * @param userId id of the user
      */
     @PostMapping("/api/game/{gameId}/user/{userId}/stand")
-    public ResponseEntity<Void> stand(@PathVariable String gameId, @PathVariable String userId) {
-        return null;
+    public ResponseEntity<Game> stand(@PathVariable String gameId, @PathVariable String userId) throws PlayerAlreadyStoppedException, GameNotFoundException {
+        return ResponseEntity.ok(blackjackService.stand(gameId, userId));
         // TODO Bad request ha nem az adott játékos következik
     }
 }
