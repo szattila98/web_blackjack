@@ -1,11 +1,9 @@
 package hu.miskolc.uni.web_blackjack.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import hu.miskolc.uni.web_blackjack.model.enums.PlayerStateType;
+import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Data model for the Player object.
@@ -15,11 +13,12 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class Player {
 
-    private String name;
-    private List<Card> cards;
-    private int money;
-    private int wager;
+    private User user;
+    private Set<Card> cards;
+    private int points;
+    private PlayerStateType state;
 }

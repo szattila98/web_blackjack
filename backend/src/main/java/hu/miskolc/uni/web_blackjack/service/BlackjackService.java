@@ -1,51 +1,94 @@
 package hu.miskolc.uni.web_blackjack.service;
 
-import hu.miskolc.uni.web_blackjack.model.GameState;
+import hu.miskolc.uni.web_blackjack.model.Game;
+import hu.miskolc.uni.web_blackjack.model.Player;
+import hu.miskolc.uni.web_blackjack.model.User;
+import hu.miskolc.uni.web_blackjack.service.exceptions.*;
+
+import java.util.List;
 
 /**
  * Interface of the Blackjack Service
  * Defines all the possible operations for the service
  *
  * @author Attila Szőke
+ * @author Tamás Sólyom
  */
 public interface BlackjackService {
 
     /**
+     * Creates a new user.
+     *
+     * @param name new users name
+     * @return user object
+     */
+    User createUser(String name);
+
+    /**
+     * Returns every game, except the one in which the userId is already in.
+     *
+     * @param userId id of the user to filter out
+     * @return list of games
+     */
+    List<Game> getGames(String userId);
+
+    /**
+     * Returns every stored info about a game.
+     *
+     * @param gameId id of the searched game
+     * @return game object
+     * @throws GameNotFoundException when a game could not be found
+     */
+    Game getGame(String gameId) throws GameNotFoundException;
+
+    /**
      * Starts a new game of blackjack. Sends an object which stores the game state.
      *
-     * @return GameState - stores the game state
+     * @param userId the creators user ID
+     * @return user object
+     * @throws UserNotFoundException when a user could not be found
      */
-    GameState start();
+    Game createGame(String userId) throws UserNotFoundException;
 
     /**
      * Joins an ongoing game of blackjack. Sends an object which stores the game state.
      *
-     * @return GameState - stores the game state
+     * @return id of the game
+     * @exception GameNotFoundException when a game could not be found
+     * @exception UserNotFoundException when a user could not be found
+     * @exception GameFullException when the game reached it's maximum player count
+     * @exception PlayerAlreadyInGameException when the player is already present in the player list
      */
-    GameState start(GameState gameState);
+    Game joinGame(String gameId, String userId) throws GameNotFoundException, UserNotFoundException, GameFullException, PlayerAlreadyInGameException, GameAlreadyClosedException;
 
     /**
      * Gives the current player another card.
      *
-     * @param gameState - stores the game state
-     * @return GameState - stores the game state
+     * @param gameId stores the game ID
+     * @param userId stores the user ID
+     * @return game object
+     * @exception PlayerAlreadyStoppedException when the player is stopped in the game and can't get cards
      */
-    GameState hit(GameState gameState);
+    Game hit(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException;
 
     /**
      * Ends the current player's turn.
      *
-     * @param gameState - stores the game state
-     * @return GameState - stores the game state
+     * @param gameId stores the game ID
+     * @param userId stores the user ID
+     * @return game object
+     * @exception PlayerAlreadyStoppedException when the player is already stopped in the game
      */
-    GameState stand(GameState gameState);
+    Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException;
 
     /**
-     * Surrenders the round of the current player with them only losing half of their wager.
+     * Leaving a game
      *
-     * @param gameState - stores the game state
-     * @return GameState - stores the game state
+     * @param gameId stores the game ID
+     * @param userId stores the user ID
+     * @return game object
+     * @exception GameInProgressException when there are still active players in the game
      */
-    GameState surrender(GameState gameState);
+    Game exitGame(String gameId, String userId) throws GameInProgressException, GameNotFoundException;
 
 }

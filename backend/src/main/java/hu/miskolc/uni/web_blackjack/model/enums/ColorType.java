@@ -5,6 +5,6 @@ package hu.miskolc.uni.web_blackjack.model.enums;
  *
  * @author Attila Szőke
  */
-public enum SuitType {
+public enum ColorType {
     CLUBS, DIAMONDS, HEARTS, SPADES
 }
