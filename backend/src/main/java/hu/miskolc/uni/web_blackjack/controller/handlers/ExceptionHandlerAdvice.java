@@ -68,4 +68,12 @@ public class ExceptionHandlerAdvice {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap(messageKey, e.getMessage()));
     }
+
+    @ExceptionHandler(GameInProgressException.class)
+    public ResponseEntity<Map<String, Object>> handleException(GameInProgressException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap(messageKey, e.getMessage()));
+    }
 }
