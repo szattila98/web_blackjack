@@ -81,4 +81,14 @@ public interface BlackjackService {
      */
     Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException;
 
+    /**
+     * Leaving a game
+     *
+     * @param gameId stores the game ID
+     * @param userId stores the user ID
+     * @return game object
+     * @exception GameInProgressException when there are still active players in the game
+     */
+    Game exitGame(String gameId, String userId) throws GameInProgressException, GameNotFoundException;
+
 }

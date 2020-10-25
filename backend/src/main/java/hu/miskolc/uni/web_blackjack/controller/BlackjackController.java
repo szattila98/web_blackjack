@@ -108,4 +108,16 @@ public class BlackjackController {
         return ResponseEntity.ok(blackjackService.stand(gameId, userId));
         // TODO Bad request ha nem az adott játékos következik
     }
+
+    /**
+     * Leaving a game
+     *
+     * @param gameId id of the game
+     * @param userId id of the user
+     */
+    @PostMapping("api/game/{gameId}/user/{userId}/exit")
+    public ResponseEntity<Game> exitGame(@PathVariable String gameId, @PathVariable String userId) throws GameInProgressException, GameNotFoundException {
+        return ResponseEntity.ok(blackjackService.exitGame(gameId, userId));
+    }
+
 }

@@ -166,6 +166,28 @@ public class BlackjackServiceImpl implements BlackjackService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Game exitGame(String gameId, String userId) throws GameInProgressException, GameNotFoundException {
+        Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
+        Set<Player> currentPlayers = game.getPlayers();
+
+        for(Player p : currentPlayers) {
+            if(p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.IN_GAME) {
+                throw new GameInProgressException();
+            }
+        }
+        currentPlayers.forEach((p) -> {
+            if(p.getUser().getId().equals(userId)) {
+                currentPlayers.remove(p);
+            }
+        });
+        game.setPlayers(currentPlayers);
+        return gameRepository.save(game);
+    }
+
+    /**
      * Deals a random card, except cards contained the parameter set.
      * Also if the card is new adds it to the parameter list.
      *
