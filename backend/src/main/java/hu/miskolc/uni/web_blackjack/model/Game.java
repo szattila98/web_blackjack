@@ -27,6 +27,7 @@ public class Game {
     @Id
     private String id;
     private List<Player> players;
+    private Dealer dealer;
     private int currentPlayerIndex;
     @JsonIgnore
     private Set<Card> dealtCards;

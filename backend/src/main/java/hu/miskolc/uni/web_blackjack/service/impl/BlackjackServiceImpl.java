@@ -1,9 +1,6 @@
 package hu.miskolc.uni.web_blackjack.service.impl;
 
-import hu.miskolc.uni.web_blackjack.model.Card;
-import hu.miskolc.uni.web_blackjack.model.Game;
-import hu.miskolc.uni.web_blackjack.model.Player;
-import hu.miskolc.uni.web_blackjack.model.User;
+import hu.miskolc.uni.web_blackjack.model.*;
 import hu.miskolc.uni.web_blackjack.model.enums.ColorType;
 import hu.miskolc.uni.web_blackjack.model.enums.GameStateType;
 import hu.miskolc.uni.web_blackjack.model.enums.PlayerStateType;
@@ -85,7 +82,12 @@ public class BlackjackServiceImpl implements BlackjackService {
         creatorCards.add(dealCard(newGame.getDealtCards()));
         creatorCards.add(dealCard(newGame.getDealtCards()));
 
+        Set<Card> dealerCards = new HashSet<>();
+        dealerCards.add(dealCard(newGame.getDealtCards()));
+        dealerCards.add(dealCard(newGame.getDealtCards()));
+
         newGame.getPlayers().add(new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME));
+        newGame.setDealer(new Dealer(dealerCards, 0, PlayerStateType.IN_GAME));
         newGame.setCurrentPlayerIndex(0);
         log.debug("Inserting new game {} into the database!", newGame);
         return gameRepository.insert(newGame);
