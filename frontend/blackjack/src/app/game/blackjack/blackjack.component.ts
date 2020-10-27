@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-blackjack',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BlackjackComponent implements OnInit {
 
-  constructor() { }
+  gameId: string;
+
+  constructor(public route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.gameId = this.route.snapshot.queryParams.id;
   }
 
 }

@@ -1,1 +1,40 @@
-<p>game-list works!</p>
+<div class="row">
+    <div class="col-md-12">
+        <h5>Hello, {{user.name}}!</h5>
+        <p>Please choose a game, or open a new one.</p>
+        <hr>
+        <div class="row">
+            <div class="col-md-12 d-flex justify-content-between">
+                <h4>Available games</h4>
+                <div>
+                    <button class="btn btn-sm btn-primary" (click)="refreshList()" [disabled]="isRefreshInProgress">
+                        <span *ngIf="!isRefreshInProgress">
+                            Refresh list
+                        </span>
+                        <span *ngIf="isRefreshInProgress">
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            Refresh list…
+                        </span>
+                    </button>
+                    <button class="btn btn-sm btn-success ml-1" (click)="addNewGame()" [disabled]="isCreateInProgress">
+                        <span *ngIf="!isCreateInProgress">
+                            Add new
+                        </span>
+                        <span *ngIf="isCreateInProgress">
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            Add new…
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div *ngIf="games.length">
+            <div class="list-group" *ngFor="let game of games, let i = index">
+                <button type="button" class="list-group-item list-group-item-action mt-1" (click)="joinGame(game.id)">
+                    {{game.players[0].user.name}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

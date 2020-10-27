@@ -4,6 +4,7 @@ import { GameComponent } from './game.component';
 import { GameListComponent } from './game-list/game-list.component';
 import { AuthGuard } from '../core/guards/auth.guard';
 import { BlackjackComponent } from './blackjack/blackjack.component';
+import { GameGuard } from '../core/guards/game.guard';
 
 const routes: Routes = [
   {
@@ -14,11 +15,12 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: BlackjackComponent
+        component: GameListComponent
       },
       {
-        path: 'list',
-        component: GameListComponent
+        path: 'game',
+        component: BlackjackComponent,
+        canActivate: [GameGuard]
       }
     ]
   }

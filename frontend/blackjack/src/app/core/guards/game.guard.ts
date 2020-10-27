@@ -1,18 +1,15 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { IdentityService } from '../services/identity.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class JoinGuard implements CanActivate {
+export class GameGuard implements CanActivate {
 
-  constructor(
-    public identityService: IdentityService,
-    public router: Router) { }
+  constructor(public router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.identityService.getIdentity()) {
+    if (!route.queryParams.id) {
       this.router.navigateByUrl('/');
       return false;
     }

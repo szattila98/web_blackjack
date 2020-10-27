@@ -24,7 +24,7 @@ export class JoinComponent {
     this.joinService.joinUser(this.name.value).subscribe(
       res => {
         this.identityService.storeIdentity(res);
-        this.router.navigateByUrl('/list');
+        this.router.navigateByUrl('/');
       },
       err => {
         this.errorMessage = err.error.msg;
