@@ -9,6 +9,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,7 +26,8 @@ public class Game {
 
     @Id
     private String id;
-    private Set<Player> players;
+    private List<Player> players;
+    private int currentPlayerIndex;
     @JsonIgnore
     private Set<Card> dealtCards;
     private GameStateType state;

@@ -1,7 +1,6 @@
 package hu.miskolc.uni.web_blackjack.service;
 
 import hu.miskolc.uni.web_blackjack.model.Game;
-import hu.miskolc.uni.web_blackjack.model.Player;
 import hu.miskolc.uni.web_blackjack.model.User;
 import hu.miskolc.uni.web_blackjack.service.exceptions.*;
 
@@ -67,9 +66,9 @@ public interface BlackjackService {
      * @param gameId stores the game ID
      * @param userId stores the user ID
      * @return game object
-     * @exception PlayerAlreadyStoppedException when the player is stopped in the game and can't get cards
+     * @throws PlayerAlreadyStoppedException when the player is stopped in the game and can't get cards
      */
-    Game hit(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException;
+    Game hit(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException;
 
     /**
      * Ends the current player's turn.
@@ -79,7 +78,7 @@ public interface BlackjackService {
      * @return game object
      * @exception PlayerAlreadyStoppedException when the player is already stopped in the game
      */
-    Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException;
+    Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException;
 
     /**
      * Leaving a game

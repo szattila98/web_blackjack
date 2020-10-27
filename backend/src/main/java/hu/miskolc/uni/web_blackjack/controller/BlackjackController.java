@@ -1,7 +1,6 @@
 package hu.miskolc.uni.web_blackjack.controller;
 
 import hu.miskolc.uni.web_blackjack.controller.dtos.UserInput;
-import hu.miskolc.uni.web_blackjack.model.Card;
 import hu.miskolc.uni.web_blackjack.model.Game;
 import hu.miskolc.uni.web_blackjack.model.User;
 import hu.miskolc.uni.web_blackjack.service.BlackjackService;
@@ -92,9 +91,8 @@ public class BlackjackController {
      * @return game details
      */
     @PostMapping("/api/game/{gameId}/user/{userId}/hit")
-    public ResponseEntity<Game> hit(@PathVariable String gameId, @PathVariable String userId) throws PlayerAlreadyStoppedException, GameNotFoundException {
+    public ResponseEntity<Game> hit(@PathVariable String gameId, @PathVariable String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         return ResponseEntity.ok(blackjackService.hit(gameId, userId));
-        // TODO Bad request ha nem az adott játékos következik
     }
 
     /**
@@ -104,9 +102,8 @@ public class BlackjackController {
      * @param userId id of the user
      */
     @PostMapping("/api/game/{gameId}/user/{userId}/stand")
-    public ResponseEntity<Game> stand(@PathVariable String gameId, @PathVariable String userId) throws PlayerAlreadyStoppedException, GameNotFoundException {
+    public ResponseEntity<Game> stand(@PathVariable String gameId, @PathVariable String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         return ResponseEntity.ok(blackjackService.stand(gameId, userId));
-        // TODO Bad request ha nem az adott játékos következik
     }
 
     /**

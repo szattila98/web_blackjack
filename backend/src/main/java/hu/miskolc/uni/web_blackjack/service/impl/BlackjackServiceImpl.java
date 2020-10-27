@@ -54,6 +54,7 @@ public class BlackjackServiceImpl implements BlackjackService {
     @Override
     public List<Game> getGames(String userId) {
         List<Game> games = gameRepository.findAllByPlayersUserIdNot(userId);
+        games.removeIf(game -> game.getPlayers().size() > 1);
         log.debug("Fetched games {}!", games);
         return games;
     }
@@ -78,13 +79,14 @@ public class BlackjackServiceImpl implements BlackjackService {
 
         Game newGame = new Game();
         newGame.setDealtCards(new HashSet<>());
-        newGame.setPlayers(new HashSet<>());
+        newGame.setPlayers(new ArrayList<>());
         newGame.setState(GameStateType.PENDING);
 
         creatorCards.add(dealCard(newGame.getDealtCards()));
         creatorCards.add(dealCard(newGame.getDealtCards()));
 
         newGame.getPlayers().add(new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME));
+        newGame.setCurrentPlayerIndex(0);
         log.debug("Inserting new game {} into the database!", newGame);
         return gameRepository.insert(newGame);
     }
@@ -119,22 +121,26 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public Game hit(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException {
+    public Game hit(String gameId, String userId)
+            throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
         Set<Card> currentCards = game.getDealtCards();
-        Set<Player> currentPlayers = game.getPlayers();
+        List<Player> currentPlayers = game.getPlayers();
 
         Card newCard = dealCard(currentCards);
         currentCards.add(newCard);
         game.setDealtCards(currentCards);
 
-        for(Player p : currentPlayers) {
-            if(p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
+        for (Player p : currentPlayers) {
+            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
                 throw new PlayerAlreadyStoppedException();
+            }
+            if (p.getUser().getId().equals(userId) && currentPlayers.indexOf(p) != game.getCurrentPlayerIndex()) {
+                throw new NotThisPlayersTurnException();
             }
         }
         currentPlayers.forEach((p) -> {
-            if(p.getUser().getId().equals(userId)) {
+            if (p.getUser().getId().equals(userId)) {
                 p.getCards().add(newCard);
             }
         });
@@ -147,20 +153,25 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException {
+    public Game stand(String gameId, String userId)
+            throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
-        Set<Player> currentPlayers = game.getPlayers();
+        List<Player> currentPlayers = game.getPlayers();
 
-        for(Player p : currentPlayers) {
-            if(p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
+        for (Player p : currentPlayers) {
+            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
                 throw new PlayerAlreadyStoppedException();
+            }
+            if (p.getUser().getId().equals(userId) && currentPlayers.indexOf(p) != game.getCurrentPlayerIndex()) {
+                throw new NotThisPlayersTurnException();
             }
         }
         currentPlayers.forEach((p) -> {
-            if(p.getUser().getId().equals(userId)) {
+            if (p.getUser().getId().equals(userId)) {
                 p.setState(PlayerStateType.STOPPED);
             }
         });
+        game.setCurrentPlayerIndex(game.getCurrentPlayerIndex() + 1);
         game.setPlayers(currentPlayers);
         return gameRepository.save(game);
     }
@@ -171,7 +182,7 @@ public class BlackjackServiceImpl implements BlackjackService {
     @Override
     public Game exitGame(String gameId, String userId) throws GameInProgressException, GameNotFoundException {
         Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
-        Set<Player> currentPlayers = game.getPlayers();
+        List<Player> currentPlayers = game.getPlayers();
 
         for(Player p : currentPlayers) {
             if(p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.IN_GAME) {
