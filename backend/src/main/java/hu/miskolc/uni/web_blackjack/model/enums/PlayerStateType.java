@@ -6,5 +6,5 @@ package hu.miskolc.uni.web_blackjack.model.enums;
  * @author Attila Szőke
  */
 public enum PlayerStateType {
-    IN_GAME, STOPPED
+    IN_GAME, STOPPED, OUT
 }

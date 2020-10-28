@@ -86,7 +86,9 @@ public class BlackjackServiceImpl implements BlackjackService {
         dealerCards.add(dealCard(newGame.getDealtCards()));
         dealerCards.add(dealCard(newGame.getDealtCards()));
 
-        newGame.getPlayers().add(new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME));
+        Player newPlayer = new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME);
+        newPlayer = calculatePoints(newPlayer);
+        newGame.getPlayers().add(newPlayer);
         newGame.setDealer(new Dealer(dealerCards, 0, PlayerStateType.IN_GAME));
         newGame.setCurrentPlayerIndex(0);
         log.debug("Inserting new game {} into the database!", newGame);
@@ -114,7 +116,9 @@ public class BlackjackServiceImpl implements BlackjackService {
         Set<Card> userCards = new HashSet<>();
         userCards.add(dealCard(game.getDealtCards()));
         userCards.add(dealCard(game.getDealtCards()));
-        game.getPlayers().add(new Player(user, userCards, 0, PlayerStateType.IN_GAME));
+        Player newPlayer = new Player(user, userCards, 0, PlayerStateType.IN_GAME);
+        newPlayer = calculatePoints(newPlayer);
+        game.getPlayers().add(newPlayer);
         game.setState(GameStateType.IN_PROGRESS);
         return gameRepository.save(game);
     }
@@ -144,6 +148,7 @@ public class BlackjackServiceImpl implements BlackjackService {
         currentPlayers.forEach((p) -> {
             if (p.getUser().getId().equals(userId)) {
                 p.getCards().add(newCard);
+                p = calculatePoints(p);
             }
         });
         game.setPlayers(currentPlayers);
@@ -231,6 +236,29 @@ public class BlackjackServiceImpl implements BlackjackService {
      */
     private int rand(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+
+    private Player calculatePoints(Player player) {
+        int points = 0;
+        boolean moreAce = false;
+        Set<Card> playerCards = player.getCards();
+        for(Card c : playerCards) {
+            if(c.getRank() == RankType.ACE && !moreAce) {
+                points += c.getRank().getValue();
+                moreAce = true;
+            }
+            else if(c.getRank() == RankType.ACE && moreAce) {
+                points += 1;
+            }
+            else {
+                points += c.getRank().getValue();
+            }
+        }
+        player.setPoints(points);
+        if(points > 21) {
+            player.setState(PlayerStateType.OUT);
+        }
+        return player;
     }
 
 }
