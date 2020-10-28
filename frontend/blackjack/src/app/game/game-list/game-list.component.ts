@@ -16,6 +16,7 @@ export class GameListComponent implements OnInit {
   games: Game[] = [];
   isRefreshInProgress = false;
   isCreateInProgress = false;
+  errorMessage: string;
 
   constructor(
     public identityService: IdentityService,
@@ -34,22 +35,22 @@ export class GameListComponent implements OnInit {
         this.isRefreshInProgress = false;
       },
       err => {
-        // TODO
-        console.error(err);
+        this.errorMessage = err.error.msg;
         this.isRefreshInProgress = false;
       }
     );
   }
 
   refreshList(): void {
+    this.errorMessage = '';
     this.isRefreshInProgress = true;
     this.updateGamesList();
   }
 
   joinGame(gameId: string): void {
+    this.errorMessage = '';
     this.gameService.joinGame(this.user.id, gameId).subscribe(
       res => {
-        console.log('JOINED');
         this.router.navigate(['/game'], {
           queryParams: {
             id: res.id
@@ -57,17 +58,16 @@ export class GameListComponent implements OnInit {
         });
       },
       err => {
-        // TODO
-        console.error(err);
+        this.errorMessage = err.error.msg;
       }
     );
   }
 
   addNewGame(): void {
+    this.errorMessage = '';
     this.isCreateInProgress = true;
     this.gameService.createGame(this.user.id).subscribe(
       res => {
-        console.log('CREATED');
         this.isCreateInProgress = false;
         this.router.navigate(['/game'], {
           queryParams: {
@@ -76,9 +76,8 @@ export class GameListComponent implements OnInit {
         });
       },
       err => {
-        // TODO
+        this.errorMessage = err.error.msg;
         this.isCreateInProgress = false;
-        console.error(err);
       }
     );
   }
