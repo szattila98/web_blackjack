@@ -1,0 +1,19 @@
+<div class="container h-100">
+    <div class="row h-100 justify-content-center">
+        <div class="col-md-4 align-self-center">
+            <div class="text-center">
+                <img src="assets/logo.png" alt="Logo" class="logo-img">
+                <h4>Blackjack - Join the game</h4>
+                <hr>
+                <div *ngIf="errorMessage" class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="name" [formControl]="name" placeholder="Username">
+                        <small *ngIf="name.dirty && !name.valid" class="text-danger ">Username is required.</small>
+                    </div>
+                    <input type="submit" value="Join" class="btn btn-primary" [disabled]="!name.valid" (click)="joinUser()">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
