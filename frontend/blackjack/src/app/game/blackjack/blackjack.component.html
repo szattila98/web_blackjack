@@ -1,1 +1,68 @@
-<p>GAME: {{gameId}}</p>
+<div class="row">
+    <div class="col-md-12" *ngIf="game">
+
+        <div class="row" *ngIf="status">
+            <div class="col-md-12 mt-2 mb-2 text-center">
+                <div *ngIf="!status.error" class="alert alert-success" role="alert">
+                    {{status.message}}
+                </div>
+                <div *ngIf="status.error" class="alert alert-danger" role="alert">
+                    {{status.message}}
+                </div>
+            </div>
+        </div>
+
+        <div *ngFor="let player of game.players; let i = index"
+            [ngClass]="{ 'bg-light border border-success': game.currentPlayerIndex === i }">
+            <div class="row mt-2 pt-2">
+                <div class="col-md-2 col-sm-2 text-center">
+                    <img src="assets/user-pic.png" alt="User picture" class="user-pic"><br>
+                </div>
+                <div *ngIf="player.user.id !== user.id" class="col-md-10 col-sm-10 d-flex">
+                    <span *ngIf="player.state.toString() === playerStates[playerStates.IN_GAME]"
+                        class="align-self-center">is in game.</span>
+                    <span *ngIf="player.state.toString() === playerStates[playerStates.STOPPED]"
+                        class="align-self-center">is stopped.</span>
+                </div>
+                <div *ngIf="player.user.id === user.id" class="col-md-10 col-sm-10 d-flex">
+                    <div *ngFor="let card of player.cards">
+                        <app-card [number]="card.number" [rank]="card.rank" [color]="card.color" class="ml-1"></app-card>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 col-sm-2 text-center pb-2">
+                    {{player.user.name}}<span *ngIf="player.user.id === user.id"> (You)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- dealer -->
+        <div [ngClass]="{ 'bg-light border border-success': game.currentPlayerIndex === game.players.length }">
+            <div class="row mt-2 pt-2 pl-2 pr-2">
+                <div class="col-md-2 col-sm-2 text-center">
+                    <img src="assets/user-pic.png" alt="User picture" class="user-pic"><br>
+                </div>
+                <div class="col-md-10 col-sm-10 d-flex">
+                    <span class="align-self-center">is in game.</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 col-sm-2 text-center pb-2">Dealer</div>
+            </div>
+        </div>
+
+        <div class="row"
+            *ngIf="isGameFull && game.currentPlayerIndex < game.players.length && game.players[game.currentPlayerIndex].user.id === user.id">
+            <div class="col-md-12 text-center mt-2">
+                <button class="btn btn-primary mr-3" (click)="hitPlayer()">Hit</button>
+                <button class="btn btn-danger" (click)="standPlayer()">Stand</button>
+            </div>
+        </div>
+        <div *ngIf="game.state.toString() === gameStates[gameStates.CLOSED]" class="row">
+            <div class="col-md-12 mt-2 text-center">
+                <button class="btn btn-primary" (click)="navigateToGameList()">Exit</button>
+            </div>
+        </div>
+    </div>
+</div>

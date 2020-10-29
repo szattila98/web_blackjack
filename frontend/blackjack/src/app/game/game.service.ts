@@ -25,4 +25,16 @@ export class GameService {
   createGame(userId: string): Observable<Game> {
     return this.http.post<Game>('/api/game', { inputValue: userId });
   }
+
+  getGame(gameId: string): Observable<Game> {
+    return this.http.get<Game>(`/api/game/${gameId}`);
+  }
+
+  standPlayer(gameId: string, userId: string): Observable<Game> {
+    return this.http.post<Game>(`/api/game/${gameId}/user/${userId}/stand`, null);
+  }
+
+  hitPlayer(gameId: string, userId: string): Observable<Game> {
+    return this.http.post<Game>(`/api/game/${gameId}/user/${userId}/hit`, null);
+  }
 }
