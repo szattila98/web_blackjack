@@ -21,4 +21,6 @@ public class Player {
     private Set<Card> cards;
     private int points;
     private PlayerStateType state;
+    private int bid;
+
 }

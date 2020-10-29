@@ -81,6 +81,15 @@ public interface BlackjackService {
     Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException;
 
     /**
+     * Raise the player's bid in this turn
+     *
+     * @param gameId stores the game ID
+     * @param userId stores the user ID
+     * @return game object
+     */
+    Game raiseBid(String gameId, String userId, int bid) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException, InvalidBidException;
+
+    /**
      * Leaving a game
      *
      * @param gameId stores the game ID

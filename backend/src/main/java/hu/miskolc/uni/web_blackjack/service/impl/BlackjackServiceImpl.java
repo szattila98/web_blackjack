@@ -86,7 +86,7 @@ public class BlackjackServiceImpl implements BlackjackService {
         dealerCards.add(dealCard(newGame.getDealtCards()));
         dealerCards.add(dealCard(newGame.getDealtCards()));
 
-        Player newPlayer = new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME);
+        Player newPlayer = new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME, 0);
         newPlayer = calculatePoints(newPlayer);
         newGame.getPlayers().add(newPlayer);
         newGame.setDealer(new Dealer(dealerCards, 0, PlayerStateType.IN_GAME));
@@ -116,7 +116,7 @@ public class BlackjackServiceImpl implements BlackjackService {
         Set<Card> userCards = new HashSet<>();
         userCards.add(dealCard(game.getDealtCards()));
         userCards.add(dealCard(game.getDealtCards()));
-        Player newPlayer = new Player(user, userCards, 0, PlayerStateType.IN_GAME);
+        Player newPlayer = new Player(user, userCards, 0, PlayerStateType.IN_GAME, 0);
         newPlayer = calculatePoints(newPlayer);
         game.getPlayers().add(newPlayer);
         game.setState(GameStateType.IN_PROGRESS);
@@ -138,7 +138,7 @@ public class BlackjackServiceImpl implements BlackjackService {
         game.setDealtCards(currentCards);
 
         for (Player p : currentPlayers) {
-            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
+            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED || p.getState() == PlayerStateType.OUT) {
                 throw new PlayerAlreadyStoppedException();
             }
             if (p.getUser().getId().equals(userId) && currentPlayers.indexOf(p) != game.getCurrentPlayerIndex()) {
@@ -160,25 +160,54 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public Game stand(String gameId, String userId)
-            throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
+    public Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
         List<Player> currentPlayers = game.getPlayers();
 
         for (Player p : currentPlayers) {
-            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
+            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED || p.getState() == PlayerStateType.OUT) {
                 throw new PlayerAlreadyStoppedException();
             }
             if (p.getUser().getId().equals(userId) && currentPlayers.indexOf(p) != game.getCurrentPlayerIndex()) {
                 throw new NotThisPlayersTurnException();
             }
         }
+
         currentPlayers.forEach((p) -> {
             if (p.getUser().getId().equals(userId)) {
                 p.setState(PlayerStateType.STOPPED);
             }
         });
         game.setCurrentPlayerIndex(game.getCurrentPlayerIndex() + 1);
+        game.setPlayers(currentPlayers);
+        return gameRepository.save(game);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Game raiseBid(String gameId, String userId, int bid) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException, InvalidBidException {
+        Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
+        List<Player> currentPlayers = game.getPlayers();
+
+        for (Player p : currentPlayers) {
+            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED || p.getState() == PlayerStateType.OUT) {
+                throw new PlayerAlreadyStoppedException();
+            }
+            if (p.getUser().getId().equals(userId) && currentPlayers.indexOf(p) != game.getCurrentPlayerIndex()) {
+                throw new NotThisPlayersTurnException();
+            }
+            if(p.getUser().getCurrency() < bid) {
+                throw new InvalidBidException();
+            }
+        }
+
+        currentPlayers.forEach((p) -> {
+            if (p.getUser().getId().equals(userId)) {
+                p.setBid(p.getBid() + bid);
+            }
+        });
         game.setPlayers(currentPlayers);
         return gameRepository.save(game);
     }
