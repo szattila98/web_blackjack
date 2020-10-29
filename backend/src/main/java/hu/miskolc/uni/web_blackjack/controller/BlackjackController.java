@@ -90,7 +90,7 @@ public class BlackjackController {
      * @param userId id of the user
      * @return game details
      */
-    @PostMapping("/api/game/{gameId}/user/{userId}/hit")
+    @PostMapping("/game/{gameId}/user/{userId}/hit")
     public ResponseEntity<Game> hit(@PathVariable String gameId, @PathVariable String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         return ResponseEntity.ok(blackjackService.hit(gameId, userId));
     }
@@ -101,7 +101,7 @@ public class BlackjackController {
      * @param gameId id of the game
      * @param userId id of the user
      */
-    @PostMapping("/api/game/{gameId}/user/{userId}/stand")
+    @PostMapping("/game/{gameId}/user/{userId}/stand")
     public ResponseEntity<Game> stand(@PathVariable String gameId, @PathVariable String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         return ResponseEntity.ok(blackjackService.stand(gameId, userId));
     }
@@ -112,7 +112,7 @@ public class BlackjackController {
      * @param gameId id of the game
      * @param userId id of the user
      */
-    @PostMapping("api/game/{gameId}/user/{userId}/exit")
+    @PostMapping("/game/{gameId}/user/{userId}/exit")
     public ResponseEntity<Game> exitGame(@PathVariable String gameId, @PathVariable String userId) throws GameInProgressException, GameNotFoundException {
         return ResponseEntity.ok(blackjackService.exitGame(gameId, userId));
     }
