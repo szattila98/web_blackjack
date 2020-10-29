@@ -39,6 +39,18 @@ public class BlackjackController {
     }
 
     /**
+     * Increase the amount of money on a user's currency
+     *
+     * @param userId id of the user
+     * @param money amount of money to increase currency
+     * @return user object
+     */
+    @PostMapping("/user/{userId}/currency/{money}")
+    public ResponseEntity<User> increaseCurrency(@PathVariable String userId, @PathVariable int money) throws UserNotFoundException, InvalidCurrencyException {
+        return ResponseEntity.ok(blackjackService.refillCurrency(userId, money));
+    }
+
+    /**
      * List all games, except the one in which the current user is already a player.
      *
      * @param userId id of the current user

@@ -92,4 +92,12 @@ public class ExceptionHandlerAdvice {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap(messageKey, e.getMessage()));
     }
+
+    @ExceptionHandler(InvalidCurrencyException.class)
+    public ResponseEntity<Map<String, Object>> handleException(InvalidCurrencyException e) {
+        log.error(e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap(messageKey, e.getMessage()));
+    }
 }

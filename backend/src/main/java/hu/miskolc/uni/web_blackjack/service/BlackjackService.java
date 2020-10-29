@@ -24,6 +24,15 @@ public interface BlackjackService {
     User createUser(String name);
 
     /**
+     * Raise the amount of money on user's currency
+     *
+     * @param userId id of the user
+     * @param money amount of money to raise currency
+     * @return user object
+     */
+    User refillCurrency(String userId, int money) throws UserNotFoundException, InvalidCurrencyException;
+
+    /**
      * Returns every game, except the one in which the userId is already in.
      *
      * @param userId id of the user to filter out

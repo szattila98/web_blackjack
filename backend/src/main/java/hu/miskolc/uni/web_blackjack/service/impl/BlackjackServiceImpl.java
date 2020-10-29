@@ -49,6 +49,18 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
+    public User refillCurrency(String userId, int money) throws UserNotFoundException, InvalidCurrencyException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if(money <= 0) throw new InvalidCurrencyException();
+        user.setCurrency(user.getCurrency() + money);
+        log.debug("{} user currency was increased by {}.", user.getName(), money);
+        return userRepository.save(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Game> getGames(String userId) {
         List<Game> games = gameRepository.findAllByPlayersUserIdNot(userId);
         games.removeIf(game -> game.getPlayers().size() > 1);
