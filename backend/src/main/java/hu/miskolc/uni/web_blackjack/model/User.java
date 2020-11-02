@@ -23,7 +23,7 @@ public class User {
     @Id
     private String id;
     private String name;
-    private int currency;
+    private double currency;
 
     public User(String name) {
         this.name = name;

@@ -302,4 +302,25 @@ public class BlackjackServiceImpl implements BlackjackService {
         return player;
     }
 
+    private Game calculateResult(Game game) {
+        int dealerPoints = game.getDealer().getPoints();
+
+        for(Player p : game.getPlayers()) {
+            double currency = p.getUser().getCurrency();
+            if(p.getState() == PlayerStateType.OUT) {
+                p.getUser().setCurrency(currency - p.getBid());
+            }
+            else if(p.getPoints() == 21 && p.getCards().size() == 2 && dealerPoints != 21) {
+                p.getUser().setCurrency(currency + p.getBid()*0.5);
+            }
+            else if(p.getPoints() > dealerPoints || game.getDealer().getState() == PlayerStateType.OUT) {
+                p.getUser().setCurrency(currency + p.getBid());
+            }
+            else {
+                p.getUser().setCurrency(currency - p.getBid());
+            }
+        }
+        return game;
+    }
+
 }
