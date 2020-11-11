@@ -99,7 +99,6 @@ public class BlackjackServiceImpl implements BlackjackService {
         dealerCards.add(dealCard(newGame.getDealtCards()));
 
         Player newPlayer = new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME, 0);
-        newPlayer = calculatePoints(newPlayer);
         newGame.getPlayers().add(newPlayer);
         newGame.setDealer(new Dealer(dealerCards, 0, PlayerStateType.IN_GAME));
         newGame.setCurrentPlayerIndex(0);
@@ -129,7 +128,6 @@ public class BlackjackServiceImpl implements BlackjackService {
         userCards.add(dealCard(game.getDealtCards()));
         userCards.add(dealCard(game.getDealtCards()));
         Player newPlayer = new Player(user, userCards, 0, PlayerStateType.IN_GAME, 0);
-        newPlayer = calculatePoints(newPlayer);
         game.getPlayers().add(newPlayer);
         game.setState(GameStateType.IN_PROGRESS);
         return gameRepository.save(game);
@@ -160,11 +158,9 @@ public class BlackjackServiceImpl implements BlackjackService {
         currentPlayers.forEach((p) -> {
             if (p.getUser().getId().equals(userId)) {
                 p.getCards().add(newCard);
-                p = calculatePoints(p);
             }
         });
         game.setPlayers(currentPlayers);
-
         return gameRepository.save(game);
     }
 
@@ -277,29 +273,6 @@ public class BlackjackServiceImpl implements BlackjackService {
      */
     private int rand(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
-    }
-
-    private Player calculatePoints(Player player) {
-        int points = 0;
-        boolean moreAce = false;
-        Set<Card> playerCards = player.getCards();
-        for(Card c : playerCards) {
-            if(c.getRank() == RankType.ACE && !moreAce) {
-                points += c.getRank().getValue();
-                moreAce = true;
-            }
-            else if(c.getRank() == RankType.ACE && moreAce) {
-                points += 1;
-            }
-            else {
-                points += c.getRank().getValue();
-            }
-        }
-        player.setPoints(points);
-        if(points > 21) {
-            player.setState(PlayerStateType.OUT);
-        }
-        return player;
     }
 
     private Game calculateResult(Game game) {
