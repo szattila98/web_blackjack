@@ -293,6 +293,7 @@ public class BlackjackServiceImpl implements BlackjackService {
                 p.getUser().setCurrency(currency - p.getBid());
             }
         }
+        game.setState(GameStateType.CLOSED);
         return game;
     }
 
