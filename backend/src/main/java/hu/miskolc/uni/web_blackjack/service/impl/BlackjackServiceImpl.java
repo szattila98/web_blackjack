@@ -297,4 +297,36 @@ public class BlackjackServiceImpl implements BlackjackService {
         return game;
     }
 
+    private Game dealerTurn(Game game) {
+        Dealer dealer = game.getDealer();
+        while(dealer.getState() != PlayerStateType.OUT || dealer.getState() != PlayerStateType.STOPPED) {
+            int dealerPoints = dealer.getPoints();
+            if(dealerPoints > 21) {
+                dealer.setState(PlayerStateType.OUT);
+            }
+            if(dealerPoints <= 10) {
+                dealer.getCards().add(dealCard(game.getDealtCards()));
+            }
+            else if(dealerPoints == 21) {
+                dealer.setState(PlayerStateType.STOPPED);
+            }
+            else {
+                boolean dealerHasMorePoints = true;
+                for(Player p : game.getPlayers()) {
+                    if(dealerPoints < p.getPoints()) {
+                        dealerHasMorePoints = false;
+                    }
+                }
+                if(dealerHasMorePoints) {
+                    dealer.setState(PlayerStateType.STOPPED);
+                }
+                else if(!dealerHasMorePoints) {
+                    dealer.getCards().add(dealCard(game.getDealtCards()));
+                }
+            }
+        }
+        game.setDealer(dealer);
+        return game;
+    }
+
 }

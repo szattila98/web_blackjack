@@ -30,7 +30,7 @@ public class Dealer {
                 points += c.getRank().getValue();
                 moreAce = true;
             }
-            else if(c.getRank() == RankType.ACE && moreAce) {
+            else if(c.getRank() == RankType.ACE && moreAce || c.getRank() == RankType.ACE && points >= 11) {
                 points += 1;
             }
             else {
