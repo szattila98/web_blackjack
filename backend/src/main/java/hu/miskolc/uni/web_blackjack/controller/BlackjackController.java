@@ -39,6 +39,18 @@ public class BlackjackController {
     }
 
     /**
+     * Increase the amount of money on a user's currency
+     *
+     * @param userId id of the user
+     * @param money amount of money to increase currency
+     * @return user object
+     */
+    @PostMapping("/user/{userId}/currency/{money}")
+    public ResponseEntity<User> increaseCurrency(@PathVariable String userId, @PathVariable int money) throws UserNotFoundException, InvalidCurrencyException {
+        return ResponseEntity.ok(blackjackService.refillCurrency(userId, money));
+    }
+
+    /**
      * List all games, except the one in which the current user is already a player.
      *
      * @param userId id of the current user
@@ -104,6 +116,18 @@ public class BlackjackController {
     @PostMapping("/game/{gameId}/user/{userId}/stand")
     public ResponseEntity<Game> stand(@PathVariable String gameId, @PathVariable String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         return ResponseEntity.ok(blackjackService.stand(gameId, userId));
+    }
+
+    /**
+     * Raise the player's bid
+     *
+     * @param gameId id of the game
+     * @param userId id of the user
+     * @param bid amount of bid
+     */
+    @PostMapping("/api/game/{gameId}/user/{userId}/bid/{bid}")
+    public ResponseEntity<Game> raiseBid(@PathVariable String gameId, @PathVariable String userId, @PathVariable int bid) throws InvalidBidException, PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
+        return ResponseEntity.ok(blackjackService.raiseBid(gameId, userId, bid));
     }
 
     /**

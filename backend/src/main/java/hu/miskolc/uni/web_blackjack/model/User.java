@@ -23,8 +23,10 @@ public class User {
     @Id
     private String id;
     private String name;
+    private double currency;
 
     public User(String name) {
         this.name = name;
+        this.currency = 5000;
     }
 }

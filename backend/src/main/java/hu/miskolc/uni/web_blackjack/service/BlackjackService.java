@@ -24,6 +24,15 @@ public interface BlackjackService {
     User createUser(String name);
 
     /**
+     * Raise the amount of money on user's currency
+     *
+     * @param userId id of the user
+     * @param money amount of money to raise currency
+     * @return user object
+     */
+    User refillCurrency(String userId, int money) throws UserNotFoundException, InvalidCurrencyException;
+
+    /**
      * Returns every game, except the one in which the userId is already in.
      *
      * @param userId id of the user to filter out
@@ -79,6 +88,15 @@ public interface BlackjackService {
      * @exception PlayerAlreadyStoppedException when the player is already stopped in the game
      */
     Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException;
+
+    /**
+     * Raise the player's bid in this turn
+     *
+     * @param gameId stores the game ID
+     * @param userId stores the user ID
+     * @return game object
+     */
+    Game raiseBid(String gameId, String userId, int bid) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException, InvalidBidException;
 
     /**
      * Leaving a game

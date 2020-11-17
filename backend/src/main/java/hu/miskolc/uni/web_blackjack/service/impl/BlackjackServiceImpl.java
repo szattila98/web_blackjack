@@ -49,6 +49,18 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
+    public User refillCurrency(String userId, int money) throws UserNotFoundException, InvalidCurrencyException {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if(money <= 0) throw new InvalidCurrencyException();
+        user.setCurrency(user.getCurrency() + money);
+        log.debug("{} user currency was increased by {}.", user.getName(), money);
+        return userRepository.save(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Game> getGames(String userId) {
         List<Game> games = gameRepository.findAllByPlayersUserIdNot(userId);
         games.removeIf(game -> game.getPlayers().size() > 1);
@@ -86,8 +98,7 @@ public class BlackjackServiceImpl implements BlackjackService {
         dealerCards.add(dealCard(newGame.getDealtCards()));
         dealerCards.add(dealCard(newGame.getDealtCards()));
 
-        Player newPlayer = new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME);
-        newPlayer = calculatePoints(newPlayer);
+        Player newPlayer = new Player(creator, creatorCards, 0, PlayerStateType.IN_GAME, 0);
         newGame.getPlayers().add(newPlayer);
         newGame.setDealer(new Dealer(dealerCards, 0, PlayerStateType.IN_GAME));
         newGame.setCurrentPlayerIndex(0);
@@ -116,8 +127,7 @@ public class BlackjackServiceImpl implements BlackjackService {
         Set<Card> userCards = new HashSet<>();
         userCards.add(dealCard(game.getDealtCards()));
         userCards.add(dealCard(game.getDealtCards()));
-        Player newPlayer = new Player(user, userCards, 0, PlayerStateType.IN_GAME);
-        newPlayer = calculatePoints(newPlayer);
+        Player newPlayer = new Player(user, userCards, 0, PlayerStateType.IN_GAME, 0);
         game.getPlayers().add(newPlayer);
         game.setState(GameStateType.IN_PROGRESS);
         return gameRepository.save(game);
@@ -138,7 +148,7 @@ public class BlackjackServiceImpl implements BlackjackService {
         game.setDealtCards(currentCards);
 
         for (Player p : currentPlayers) {
-            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
+            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED || p.getState() == PlayerStateType.OUT) {
                 throw new PlayerAlreadyStoppedException();
             }
             if (p.getUser().getId().equals(userId) && currentPlayers.indexOf(p) != game.getCurrentPlayerIndex()) {
@@ -148,11 +158,9 @@ public class BlackjackServiceImpl implements BlackjackService {
         currentPlayers.forEach((p) -> {
             if (p.getUser().getId().equals(userId)) {
                 p.getCards().add(newCard);
-                p = calculatePoints(p);
             }
         });
         game.setPlayers(currentPlayers);
-
         return gameRepository.save(game);
     }
 
@@ -160,25 +168,54 @@ public class BlackjackServiceImpl implements BlackjackService {
      * {@inheritDoc}
      */
     @Override
-    public Game stand(String gameId, String userId)
-            throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
+    public Game stand(String gameId, String userId) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
         List<Player> currentPlayers = game.getPlayers();
 
         for (Player p : currentPlayers) {
-            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED) {
+            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED || p.getState() == PlayerStateType.OUT) {
                 throw new PlayerAlreadyStoppedException();
             }
             if (p.getUser().getId().equals(userId) && currentPlayers.indexOf(p) != game.getCurrentPlayerIndex()) {
                 throw new NotThisPlayersTurnException();
             }
         }
+
         currentPlayers.forEach((p) -> {
             if (p.getUser().getId().equals(userId)) {
                 p.setState(PlayerStateType.STOPPED);
             }
         });
         game.setCurrentPlayerIndex(game.getCurrentPlayerIndex() + 1);
+        game.setPlayers(currentPlayers);
+        return gameRepository.save(game);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Game raiseBid(String gameId, String userId, int bid) throws PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException, InvalidBidException {
+        Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
+        List<Player> currentPlayers = game.getPlayers();
+
+        for (Player p : currentPlayers) {
+            if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED || p.getState() == PlayerStateType.OUT) {
+                throw new PlayerAlreadyStoppedException();
+            }
+            if (p.getUser().getId().equals(userId) && currentPlayers.indexOf(p) != game.getCurrentPlayerIndex()) {
+                throw new NotThisPlayersTurnException();
+            }
+            if(p.getUser().getCurrency() < bid) {
+                throw new InvalidBidException();
+            }
+        }
+
+        currentPlayers.forEach((p) -> {
+            if (p.getUser().getId().equals(userId)) {
+                p.setBid(p.getBid() + bid);
+            }
+        });
         game.setPlayers(currentPlayers);
         return gameRepository.save(game);
     }
@@ -238,27 +275,58 @@ public class BlackjackServiceImpl implements BlackjackService {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
-    private Player calculatePoints(Player player) {
-        int points = 0;
-        boolean moreAce = false;
-        Set<Card> playerCards = player.getCards();
-        for(Card c : playerCards) {
-            if(c.getRank() == RankType.ACE && !moreAce) {
-                points += c.getRank().getValue();
-                moreAce = true;
+    private Game calculateResult(Game game) {
+        int dealerPoints = game.getDealer().getPoints();
+
+        for(Player p : game.getPlayers()) {
+            double currency = p.getUser().getCurrency();
+            if(p.getState() == PlayerStateType.OUT) {
+                p.getUser().setCurrency(currency - p.getBid());
             }
-            else if(c.getRank() == RankType.ACE && moreAce) {
-                points += 1;
+            else if(p.getPoints() == 21 && p.getCards().size() == 2 && dealerPoints != 21) {
+                p.getUser().setCurrency(currency + p.getBid()*0.5);
+            }
+            else if(p.getPoints() > dealerPoints || game.getDealer().getState() == PlayerStateType.OUT) {
+                p.getUser().setCurrency(currency + p.getBid());
             }
             else {
-                points += c.getRank().getValue();
+                p.getUser().setCurrency(currency - p.getBid());
             }
         }
-        player.setPoints(points);
-        if(points > 21) {
-            player.setState(PlayerStateType.OUT);
+        game.setState(GameStateType.CLOSED);
+        return game;
+    }
+
+    private Game dealerTurn(Game game) {
+        Dealer dealer = game.getDealer();
+        while(dealer.getState() != PlayerStateType.OUT || dealer.getState() != PlayerStateType.STOPPED) {
+            int dealerPoints = dealer.getPoints();
+            if(dealerPoints > 21) {
+                dealer.setState(PlayerStateType.OUT);
+            }
+            if(dealerPoints <= 10) {
+                dealer.getCards().add(dealCard(game.getDealtCards()));
+            }
+            else if(dealerPoints == 21) {
+                dealer.setState(PlayerStateType.STOPPED);
+            }
+            else {
+                boolean dealerHasMorePoints = true;
+                for(Player p : game.getPlayers()) {
+                    if(dealerPoints < p.getPoints()) {
+                        dealerHasMorePoints = false;
+                    }
+                }
+                if(dealerHasMorePoints) {
+                    dealer.setState(PlayerStateType.STOPPED);
+                }
+                else if(!dealerHasMorePoints) {
+                    dealer.getCards().add(dealCard(game.getDealtCards()));
+                }
+            }
         }
-        return player;
+        game.setDealer(dealer);
+        return game;
     }
 
 }
