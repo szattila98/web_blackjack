@@ -19,15 +19,20 @@
                     <img src="assets/user-pic.png" alt="User picture" class="user-pic"><br>
                 </div>
                 <div *ngIf="player.user.id !== user.id" class="col-md-10 col-sm-10 d-flex">
-                    <span *ngIf="player.state.toString() === playerStates[playerStates.IN_GAME]"
+                    <span
+                        *ngIf="player.state.toString() === playerStates[playerStates.IN_GAME] && game.state.toString() !== gameStates[gameStates.CLOSED]"
                         class="align-self-center">is in game.</span>
-                    <span *ngIf="player.state.toString() === playerStates[playerStates.STOPPED]"
+                    <span
+                        *ngIf="player.state.toString() === playerStates[playerStates.STOPPED] && game.state.toString() !== gameStates[gameStates.CLOSED]"
                         class="align-self-center">is stopped.</span>
                 </div>
-                <div *ngIf="player.user.id === user.id" class="col-md-10 col-sm-10 d-flex">
+                <div *ngIf="player.user.id === user.id || game.state.toString() === gameStates[gameStates.CLOSED]"
+                    class="col-md-10 col-sm-10 d-flex">
                     <div *ngFor="let card of player.cards">
-                        <app-card [number]="card.number" [rank]="card.rank" [color]="card.color" class="ml-1"></app-card>
+                        <app-card [number]="card.number" [rank]="card.rank" [color]="card.color" class="ml-1">
+                        </app-card>
                     </div>
+                    <div class="ml-auto pr-3 align-self-center">{{player.points}} points</div>
                 </div>
             </div>
             <div class="row">
@@ -43,8 +48,15 @@
                 <div class="col-md-2 col-sm-2 text-center">
                     <img src="assets/user-pic.png" alt="User picture" class="user-pic"><br>
                 </div>
-                <div class="col-md-10 col-sm-10 d-flex">
+                <div *ngIf="game.state.toString() !== gameStates[gameStates.CLOSED]" class="col-md-10 col-sm-10 d-flex">
                     <span class="align-self-center">is in game.</span>
+                </div>
+                <div *ngIf="game.state.toString() === gameStates[gameStates.CLOSED]" class="col-md-10 col-sm-10 d-flex">
+                    <div *ngFor="let card of game.dealer.cards">
+                        <app-card [number]="card.number" [rank]="card.rank" [color]="card.color" class="ml-1">
+                        </app-card>
+                    </div>
+                    <div class="ml-auto pr-3 align-self-center">{{game.dealer.points}} points</div>
                 </div>
             </div>
             <div class="row">

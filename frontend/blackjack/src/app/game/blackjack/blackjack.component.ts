@@ -69,6 +69,13 @@ export class BlackjackComponent implements OnInit, OnDestroy {
             };
           }
 
+          if (gameUpdate.state.toString() === this.gameStates[this.gameStates.CLOSED]) {
+            this.status = {
+              error: false,
+              message: 'Game\'s ended.'
+            };
+          }
+
           this.game = gameUpdate;
         },
         err => {
