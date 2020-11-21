@@ -13,12 +13,23 @@
         </div>
 
         <div *ngFor="let player of game.players; let i = index"
-            [ngClass]="{ 'bg-light border border-success': game.currentPlayerIndex === i }">
-            <div class="row mt-2 pt-2">
+            [ngClass]="{ 'bg-light border border-success': game.currentPlayerIndex === i }" class="mt-2">
+            <div class="row mt-2 pt-2" *ngIf="game.state.toString() === gameStates[gameStates.CLOSED]">
+                <div class="col-md-2 col-sm-2 text-center">
+                    <div class="font-weight-bold text-danger" *ngIf="getPlayerResult(player) === resultStates.LOST">LOST
+                    </div>
+                    <div class="font-weight-bold text-success" *ngIf="getPlayerResult(player) === resultStates.TIE">1x
+                    </div>
+                    <div class="font-weight-bold text-success" *ngIf="getPlayerResult(player) === resultStates.WON">2x
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
                 <div class="col-md-2 col-sm-2 text-center">
                     <img src="assets/user-pic.png" alt="User picture" class="user-pic"><br>
                 </div>
-                <div *ngIf="player.user.id !== user.id" class="col-md-10 col-sm-10 d-flex">
+                <div *ngIf="player.user.id !== user.id && game.state.toString() !== gameStates[gameStates.CLOSED]"
+                    class="col-md-10 col-sm-10 d-flex">
                     <span
                         *ngIf="player.state.toString() === playerStates[playerStates.IN_GAME] && game.state.toString() !== gameStates[gameStates.CLOSED]"
                         class="align-self-center">is in game.</span>

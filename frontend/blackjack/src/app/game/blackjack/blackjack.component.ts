@@ -8,6 +8,7 @@ import { User } from 'src/app/core/models/user';
 import { IdentityService } from 'src/app/core/services/identity.service';
 import { PlayerState } from 'src/app/core/models/enums/player-state';
 import { GameState } from 'src/app/core/models/enums/game-state';
+import { PlayerResult } from 'src/app/core/models/enums/player-result';
 
 interface StatusMessage {
   error: boolean;
@@ -29,6 +30,7 @@ export class BlackjackComponent implements OnInit, OnDestroy {
   refreshInterval = 1000;
   subscription: Subscription;
   playerStates = PlayerState;
+  resultStates = PlayerResult;
   gameStates = GameState;
 
   constructor(
@@ -70,6 +72,8 @@ export class BlackjackComponent implements OnInit, OnDestroy {
           }
 
           if (gameUpdate.state.toString() === this.gameStates[this.gameStates.CLOSED]) {
+            this.subscription.unsubscribe();
+
             this.status = {
               error: false,
               message: 'Game\'s ended.'
@@ -140,6 +144,28 @@ export class BlackjackComponent implements OnInit, OnDestroy {
         };
       }
     );
+  }
+
+  getPlayerResult(player): PlayerResult {
+    const dealer = this.game.dealer;
+
+    if (player.points > 21) {
+      return PlayerResult.LOST;
+    }
+
+    if (player.points === dealer.points) {
+      return PlayerResult.TIE;
+    }
+
+    if (dealer.points > 21 && player.points < dealer.points) {
+      return PlayerResult.WON;
+    }
+
+    if (player.points > dealer.points) {
+      return PlayerResult.WON;
+    }
+
+    return PlayerResult.LOST;
   }
 
   navigateToGameList(): void {
