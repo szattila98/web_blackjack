@@ -155,11 +155,24 @@ public class BlackjackServiceImpl implements BlackjackService {
                 throw new NotThisPlayersTurnException();
             }
         }
+
         currentPlayers.forEach((p) -> {
             if (p.getUser().getId().equals(userId)) {
                 p.getCards().add(newCard);
+                if (p.getPoints() >= 21) {
+                    p.setState(PlayerStateType.STOPPED);
+                    game.setCurrentPlayerIndex(game.getCurrentPlayerIndex() + 1);
+                }
             }
         });
+
+        boolean isTheDealersTurn = game.getCurrentPlayerIndex() == game.getPlayers().size();
+
+        if (isTheDealersTurn) {
+            dealerTurn(game);
+            calculateResult(game);
+        }
+
         game.setPlayers(currentPlayers);
         return gameRepository.save(game);
     }
@@ -188,6 +201,14 @@ public class BlackjackServiceImpl implements BlackjackService {
         });
         game.setCurrentPlayerIndex(game.getCurrentPlayerIndex() + 1);
         game.setPlayers(currentPlayers);
+
+        boolean isTheDealersTurn = game.getCurrentPlayerIndex() == game.getPlayers().size();
+
+        if (isTheDealersTurn) {
+            dealerTurn(game);
+            calculateResult(game);
+        }
+
         return gameRepository.save(game);
     }
 
@@ -299,10 +320,10 @@ public class BlackjackServiceImpl implements BlackjackService {
 
     private Game dealerTurn(Game game) {
         Dealer dealer = game.getDealer();
-        while(dealer.getState() != PlayerStateType.OUT || dealer.getState() != PlayerStateType.STOPPED) {
+        while(dealer.getState() != PlayerStateType.OUT && dealer.getState() != PlayerStateType.STOPPED) {
             int dealerPoints = dealer.getPoints();
             if(dealerPoints > 21) {
-                dealer.setState(PlayerStateType.OUT);
+                dealer.setState(PlayerStateType.STOPPED);
             }
             if(dealerPoints <= 10) {
                 dealer.getCards().add(dealCard(game.getDealtCards()));

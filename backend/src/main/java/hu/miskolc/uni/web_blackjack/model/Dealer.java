@@ -39,7 +39,7 @@ public class Dealer {
         }
         setPoints(points);
         if(points > 21) {
-            setState(PlayerStateType.OUT);
+            setState(PlayerStateType.STOPPED);
         }
         return points;
     }

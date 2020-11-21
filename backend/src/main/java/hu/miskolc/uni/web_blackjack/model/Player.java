@@ -40,9 +40,7 @@ public class Player {
             }
         }
         setPoints(points);
-        if(points > 21) {
-            setState(PlayerStateType.OUT);
-        }
+
         return points;
     }
 
