@@ -220,6 +220,10 @@ public class BlackjackServiceImpl implements BlackjackService {
         Game game = gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
         List<Player> currentPlayers = game.getPlayers();
 
+        if (bid < 0) {
+            throw new InvalidBidException();
+        }
+
         for (Player p : currentPlayers) {
             if (p.getUser().getId().equals(userId) && p.getState() == PlayerStateType.STOPPED || p.getState() == PlayerStateType.OUT) {
                 throw new PlayerAlreadyStoppedException();
@@ -318,6 +322,8 @@ public class BlackjackServiceImpl implements BlackjackService {
             else {
                 p.getUser().setCurrency(currency - p.getBid());
             }
+
+            userRepository.save(p.getUser());
         }
         game.setState(GameStateType.CLOSED);
         return game;
