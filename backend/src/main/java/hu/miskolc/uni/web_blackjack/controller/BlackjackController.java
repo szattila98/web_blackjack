@@ -39,6 +39,17 @@ public class BlackjackController {
     }
 
     /**
+     * Returns the user with the given id.
+     *
+     * @param id user id
+     * @return user object
+     */
+    @GetMapping("/user/{id}")
+    public ResponseEntity<User> getUser(@PathVariable String id) throws UserNotFoundException {
+        return ResponseEntity.ok(blackjackService.getUser(id));
+    }
+
+    /**
      * Increase the amount of money on a user's currency
      *
      * @param userId id of the user
