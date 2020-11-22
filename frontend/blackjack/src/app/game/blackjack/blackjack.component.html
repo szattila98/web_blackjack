@@ -20,12 +20,15 @@
                     </div>
                     <div class="font-weight-bold text-success" *ngIf="getPlayerResult(player) === resultStates.TIE">1x
                     </div>
+                    <div class="font-weight-bold text-success" *ngIf="getPlayerResult(player) === resultStates.BLACKJACK">1.5x
+                    </div>
                     <div class="font-weight-bold text-success" *ngIf="getPlayerResult(player) === resultStates.WON">2x
                     </div>
                 </div>
             </div>
             <div class="row mt-2">
                 <div class="col-md-2 col-sm-2 text-center">
+                    <span>{{ player.bid }} $</span><br>
                     <img src="assets/user-pic.png" alt="User picture" class="user-pic"><br>
                 </div>
                 <div *ngIf="player.user.id !== user.id && game.state.toString() !== gameStates[gameStates.CLOSED]"

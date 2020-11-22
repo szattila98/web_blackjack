@@ -37,4 +37,8 @@ export class GameService {
   hitPlayer(gameId: string, userId: string): Observable<Game> {
     return this.http.post<Game>(`/api/game/${gameId}/user/${userId}/hit`, null);
   }
+
+  raiseBid(gameId: string, userId: string, bid: number): Observable<Game> {
+    return this.http.post<Game>(`/api/game/${gameId}/user/${userId}/bid/${bid}`, null);
+  }
 }

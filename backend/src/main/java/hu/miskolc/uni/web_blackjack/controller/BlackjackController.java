@@ -39,6 +39,17 @@ public class BlackjackController {
     }
 
     /**
+     * Returns the user with the given id.
+     *
+     * @param id user id
+     * @return user object
+     */
+    @GetMapping("/user/{id}")
+    public ResponseEntity<User> getUser(@PathVariable String id) throws UserNotFoundException {
+        return ResponseEntity.ok(blackjackService.getUser(id));
+    }
+
+    /**
      * Increase the amount of money on a user's currency
      *
      * @param userId id of the user
@@ -125,7 +136,7 @@ public class BlackjackController {
      * @param userId id of the user
      * @param bid amount of bid
      */
-    @PostMapping("/api/game/{gameId}/user/{userId}/bid/{bid}")
+    @PostMapping("/game/{gameId}/user/{userId}/bid/{bid}")
     public ResponseEntity<Game> raiseBid(@PathVariable String gameId, @PathVariable String userId, @PathVariable int bid) throws InvalidBidException, PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         return ResponseEntity.ok(blackjackService.raiseBid(gameId, userId, bid));
     }

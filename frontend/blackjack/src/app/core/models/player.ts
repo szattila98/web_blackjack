@@ -7,4 +7,5 @@ export interface Player {
     cards: Card[];
     points: number;
     state: PlayerState;
+    bid: number;
 }

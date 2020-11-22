@@ -24,6 +24,15 @@ public interface BlackjackService {
     User createUser(String name);
 
     /**
+     * Returns the user with the given id.
+     *
+     * @param id user's id
+     * @throws UserNotFoundException when a user could not be found
+     * @return user object
+     */
+    User getUser(String id) throws UserNotFoundException;
+
+    /**
      * Raise the amount of money on user's currency
      *
      * @param userId id of the user

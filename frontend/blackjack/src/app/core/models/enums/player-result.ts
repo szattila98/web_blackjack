@@ -1,3 +1,3 @@
 export enum PlayerResult {
-    WON, LOST, TIE
+    WON, BLACKJACK, LOST, TIE
 }
