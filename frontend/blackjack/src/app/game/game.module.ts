@@ -7,6 +7,7 @@ import { GameListComponent } from './game-list/game-list.component';
 import { BlackjackComponent } from './blackjack/blackjack.component';
 import { CardComponent } from './blackjack/card/card.component';
 import { BidModalComponent } from './blackjack/bid-modal/bid-modal.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { BidModalComponent } from './blackjack/bid-modal/bid-modal.component';
   ],
   imports: [
     CommonModule,
-    GameRoutingModule
+    GameRoutingModule,
+    FormsModule
   ]
 })
 export class GameModule { }

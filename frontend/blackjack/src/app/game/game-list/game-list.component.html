@@ -1,6 +1,19 @@
 <div class="row">
     <div class="col-md-12">
         <h5>Hello, {{user.name}}!</h5>
+        <div *ngIf="refillErrorMessage" class="alert alert-danger" role="alert">{{ refillErrorMessage }}</div>
+        <p>
+            Your currency is {{ user.currency }} $. Refill with <input type="number" id="currency" name="currency" [(ngModel)]="currencyToRefill" class="form-control"> $
+            <button class="btn btn-sm btn-primary" (click)="refillCurrency()" [disabled]="isCurrencyRefillInProgress">
+                <span *ngIf="!isCurrencyRefillInProgress">
+                    Refill
+                </span>
+                <span *ngIf="isCurrencyRefillInProgress">
+                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    Refill…
+                </span>
+            </button>
+        </p>
         <p>Please choose a game, or open a new one.</p>
         <hr>
         <div class="row">
@@ -29,7 +42,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div *ngIf="games.length">
             <div class="list-group" *ngFor="let game of games, let i = index">
                 <button type="button" class="list-group-item list-group-item-action mt-1" (click)="joinGame(game.id)">

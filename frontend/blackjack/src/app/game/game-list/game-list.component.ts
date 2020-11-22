@@ -4,6 +4,7 @@ import { User } from 'src/app/core/models/user';
 import { GameService } from '../game.service';
 import { Game } from 'src/app/core/models/game';
 import { Router } from '@angular/router';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-game-list',
@@ -14,6 +15,11 @@ export class GameListComponent implements OnInit {
 
   user: User;
   games: Game[] = [];
+
+  currencyToRefill = 0;
+  isCurrencyRefillInProgress = false;
+  refillErrorMessage: string;
+
   isRefreshInProgress = false;
   isCreateInProgress = false;
   errorMessage: string;
@@ -21,11 +27,39 @@ export class GameListComponent implements OnInit {
   constructor(
     public identityService: IdentityService,
     public gameService: GameService,
+    public userService: UserService,
     public router: Router) { }
 
   ngOnInit(): void {
-    this.user = this.identityService.getIdentity();
+    const client = this.identityService.getIdentity();
+    this.user = client;
+    this.userService.getUser(client.id).subscribe(
+      res => {
+        this.user = res;
+      },
+      err => {
+        console.error(err);
+      }
+    );
+
     this.updateGamesList();
+  }
+
+  refillCurrency(): void {
+    this.isCurrencyRefillInProgress = true;
+    this.refillErrorMessage = '';
+
+    this.userService.refillCurrency(this.user.id, this.currencyToRefill).subscribe(
+      res => {
+        this.user.currency += this.currencyToRefill;
+        this.currencyToRefill = 0;
+        this.isCurrencyRefillInProgress = false;
+      },
+      err => {
+        this.refillErrorMessage = err.error.msg;
+        this.isCurrencyRefillInProgress = false;
+      }
+    );
   }
 
   updateGamesList(): void {
