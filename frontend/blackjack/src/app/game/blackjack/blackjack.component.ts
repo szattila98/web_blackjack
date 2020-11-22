@@ -9,6 +9,8 @@ import { IdentityService } from 'src/app/core/services/identity.service';
 import { PlayerState } from 'src/app/core/models/enums/player-state';
 import { GameState } from 'src/app/core/models/enums/game-state';
 import { PlayerResult } from 'src/app/core/models/enums/player-result';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { BidModalComponent } from './bid-modal/bid-modal.component';
 
 interface StatusMessage {
   error: boolean;
@@ -37,12 +39,13 @@ export class BlackjackComponent implements OnInit, OnDestroy {
     public route: ActivatedRoute,
     public router: Router,
     public gameService: GameService,
-    public identityService: IdentityService) { }
+    public identityService: IdentityService,
+    public modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.gameId = this.route.snapshot.queryParams.id;
     this.user = this.identityService.getIdentity();
-    this.loadGame();
+    this.initializeGame();
 
     this.subscription = interval(this.refreshInterval)
       .pipe(switchMap(() => this.gameService.getGame(this.gameId)))
@@ -87,7 +90,8 @@ export class BlackjackComponent implements OnInit, OnDestroy {
             error: true,
             message: `Failed to update game state: ${err.error.msg}`
           };
-        });
+        }
+      );
   }
 
   ngOnDestroy(): void {
@@ -98,10 +102,17 @@ export class BlackjackComponent implements OnInit, OnDestroy {
     return this.game.players.length === 2;
   }
 
-  loadGame(): void {
+  initializeGame(): void {
     this.gameService.getGame(this.gameId).subscribe(
       res => {
         this.game = res;
+
+        for (const player of this.game.players) {
+          if (player.user.id === this.user.id && player.bid === 0) {
+            const modalRef = this.modalService.open(BidModalComponent);
+            modalRef.componentInstance.gameId = this.gameId;
+          }
+        }
       },
       err => {
         this.status = {
@@ -123,7 +134,7 @@ export class BlackjackComponent implements OnInit, OnDestroy {
       err => {
         this.status = {
           error: true,
-          message: err
+          message: err.error.msg
         };
       }
     );
@@ -140,7 +151,7 @@ export class BlackjackComponent implements OnInit, OnDestroy {
       err => {
         this.status = {
           error: true,
-          message: err
+          message: err.error.msg
         };
       }
     );
@@ -155,6 +166,10 @@ export class BlackjackComponent implements OnInit, OnDestroy {
 
     if (player.points === dealer.points) {
       return PlayerResult.TIE;
+    }
+
+    if (dealer.points !== 21 && player.points === 21 && player.cards.length === 2) {
+      return PlayerResult.BLACKJACK;
     }
 
     if (dealer.points > 21 && player.points < dealer.points) {

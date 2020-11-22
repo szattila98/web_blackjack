@@ -125,7 +125,7 @@ public class BlackjackController {
      * @param userId id of the user
      * @param bid amount of bid
      */
-    @PostMapping("/api/game/{gameId}/user/{userId}/bid/{bid}")
+    @PostMapping("/game/{gameId}/user/{userId}/bid/{bid}")
     public ResponseEntity<Game> raiseBid(@PathVariable String gameId, @PathVariable String userId, @PathVariable int bid) throws InvalidBidException, PlayerAlreadyStoppedException, GameNotFoundException, NotThisPlayersTurnException {
         return ResponseEntity.ok(blackjackService.raiseBid(gameId, userId, bid));
     }

@@ -6,6 +6,7 @@ import { GameComponent } from './game.component';
 import { GameListComponent } from './game-list/game-list.component';
 import { BlackjackComponent } from './blackjack/blackjack.component';
 import { CardComponent } from './blackjack/card/card.component';
+import { BidModalComponent } from './blackjack/bid-modal/bid-modal.component';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { CardComponent } from './blackjack/card/card.component';
     GameComponent,
     GameListComponent,
     BlackjackComponent,
-    CardComponent
+    CardComponent,
+    BidModalComponent
   ],
   imports: [
     CommonModule,
